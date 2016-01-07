@@ -1,0 +1,7 @@
+doc_cnpdocument:
+    resource: "@DocBundle/Resources/config/routing/cnpdocument.yml"
+    prefix:   /cnpdocument
+
+doc_homepage:
+    path:     /
+    defaults: { _controller: DocBundle:Default:index }
