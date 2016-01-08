@@ -3,6 +3,7 @@
 namespace DocBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,8 +27,9 @@ class CnpDocumentType extends AbstractType
            /* ->add('commentaire')
             ->add('updateAt', 'datetime')
             ->add('createdAt', 'datetime')*/
-            ->add('pdfSource', PdfType::class)
+            //->add('pdfSource', PdfType::class)
            // ->add('Valider', SubmitType::class)
+           ->add('pdfSource', FileType::class, array('required'=> false, 'data_class' => null))
         ;
     }
     

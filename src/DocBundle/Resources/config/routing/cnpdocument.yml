@@ -8,6 +8,11 @@ cnpdocument_show:
     defaults: { _controller: "DocBundle:CnpDocument:show" }
     methods:  GET
 
+cnpdocument_show_pdf:
+    path:     /{id}/pdf
+    defaults: { _controller: "DocBundle:CnpDocument:showPdf" }
+    methods:  GET
+
 cnpdocument_new:
     path:     /new
     defaults: { _controller: "DocBundle:CnpDocument:new" }

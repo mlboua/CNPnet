@@ -69,12 +69,4 @@
         </div>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.pdfSource.title, "Technical data", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
-        {{ form_errors(form.pdfSource.title) }}
-        <div class="col-sm-4">
-            {{ form_widget(form.pdfSource.title, {'attr': {'class': 'form-control'}}) }}
-        </div>
-    </div>
-
     {{ form_rest(form) }}

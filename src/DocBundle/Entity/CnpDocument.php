@@ -74,13 +74,19 @@ class CnpDocument
     private $reference;
 
     /**
-     * @var Pdf
+     * @var mixed
      *
-     * @ORM\OneToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-     * @Assert\Valid()
+     * @ORM\Column(name="pdfSource", type="blob")
      */
     private $pdfSource;
+
+    /**
+     * @var mixed
+     *
+     * @ORM\Column(name="pdf_name", type="string", length=225)
+     */
+    private $pdfName;
+
 
     /**
      * @var string
@@ -357,11 +363,10 @@ class CnpDocument
     /**
      * Set pdfSource
      *
-     * @param \DocBundle\Entity\Pdf $pdfSource
      *
      * @return CnpDocument
      */
-    public function setPdfSource(\DocBundle\Entity\Pdf $pdfSource = null)
+    public function setPdfSource($pdfSource)
     {
         $this->pdfSource = $pdfSource;
 
@@ -371,10 +376,28 @@ class CnpDocument
     /**
      * Get pdfSource
      *
-     * @return \DocBundle\Entity\Pdf
+     * @return mixed
      */
     public function getPdfSource()
     {
         return $this->pdfSource;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPdfName()
+    {
+        return $this->pdfName;
+    }
+
+    /**
+     * @param mixed $pdfName
+     */
+    public function setPdfName($pdfName)
+    {
+        $this->pdfName = $pdfName;
+    }
+
+
 }

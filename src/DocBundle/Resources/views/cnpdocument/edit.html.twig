@@ -2,21 +2,19 @@
 
 {% block body %}
     <h1>Modification d'un paramètre</h1>
+<div class="well">
     {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 
     {{ include("DocBundle:cnpdocument:form.html.twig") }}
-    <button type="submit" class="glyphicon glyphicon-ok btn-primary">Valider</button>
+    <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Modifier</button>
 
     {{ form_end(form) }}
+</div>
 
-    <ul>
-        <li>
-            <a href="{{ path('cnpdocument_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+<a href="{{ path('cnpdocument_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
+
+{{ form_start(delete_form) }}
+<button type="button" class="btn btn-danger">Supprimer</button>
+{{ form_end(delete_form) }}
+
 {% endblock %}

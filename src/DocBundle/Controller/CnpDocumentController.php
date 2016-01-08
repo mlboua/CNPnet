@@ -3,12 +3,14 @@
 namespace DocBundle\Controller;
 
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\File;
 
 use DocBundle\Entity\CnpDocument;
 use DocBundle\Form\CnpDocumentType;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * CnpDocument controller.
@@ -43,9 +45,9 @@ class CnpDocumentController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /*$file = $cnpDocument->getPdfSource();
-            $file->setTitle($this->generateFileName($cnpDocument));
-            $cnpDocument->setPdfSource($file);*/
+            $cnpDocument->setPdfName($this->generateFileName($cnpDocument));
+            $stream = fopen($cnpDocument->getPdfSource(), 'rb');
+            $cnpDocument->setPdfSource(stream_get_contents($stream));
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($cnpDocument);
@@ -75,19 +77,42 @@ class CnpDocumentController extends Controller
     }
 
     /**
+     * Finds and displays a CnpDocument associated pdf document.
+     *
+     */
+    public function showPdfAction(CnpDocument $cnpDocument)
+    {
+        $pdfFile = $cnpDocument->getPdfSource();
+        $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
+        return $response;
+    }
+
+    /**
      * Displays a form to edit an existing CnpDocument entity.
      *
      */
     public function editAction(Request $request, CnpDocument $cnpDocument)
     {
+        //$temp_file = tmpfile();
+       // file_put_contents($temp_file, $cnpDocument->getPdfSource());
+        //$tempname = tempnam('', 'report_');
+        //rename($tempname, $cnpDocument->getPdfName());
+        //fopen($cnpDocument->getPdfName(), 'rb');
+        //$metaDatas = stream_get_meta_data($temp_file);
+        //$tmpFilename = $metaDatas['uri'];
+        //$cnpDocument->setType($cnpDocument->getPdfName());
+        //$cnpDocument->setPdfSource(new File($cnpDocument->getPdfName()));
+
+
         $deleteForm = $this->createDeleteForm($cnpDocument);
         $editForm = $this->createForm('DocBundle\Form\CnpDocumentType', $cnpDocument);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            /*$file = $cnpDocument->getPdfSource();
-            $file->setTitle($this->generateFileName($cnpDocument));
-            $cnpDocument->setPdfSource($file);*/
+            $cnpDocument->setPdfName($this->generateFileName($cnpDocument));
+            $stream = fopen($cnpDocument->getPdfSource(), 'rb');
+            $cnpDocument->setPdfSource(stream_get_contents($stream));
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($cnpDocument);
             $em->flush();

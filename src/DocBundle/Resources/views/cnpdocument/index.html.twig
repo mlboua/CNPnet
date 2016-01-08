@@ -35,7 +35,7 @@
                 <td>{{ cnpDocument.ordre }}</td>
                 <td>{{ cnpDocument.type }}</td>
                 <td>{{ cnpDocument.reference }}</td>
-                <td><a href="{{ asset('uploads/pdf/' ~ cnpDocument.pdfSource.title) }}">{{ cnpDocument.pdfSource.title }}</a></td>
+                <td><a href="{{ path('cnpdocument_show_pdf', { 'id': cnpDocument.id }) }}">{{ cnpDocument.pdfName }}</a></td>
                 <!--<td>{{ cnpDocument.commentaire }}</td>
                 <td>{% if cnpDocument.updateAt %}{{ cnpDocument.updateAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{% if cnpDocument.createdAt %}{{ cnpDocument.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>-->
