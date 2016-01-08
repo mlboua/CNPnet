@@ -1,0 +1,62 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    {% if  cnpDocuments is empty %}
+        <h1>Aucun paramètrage n'a été enregistré</h1>
+    {% else %}
+    <h1>La liste des paramètrages</h1>
+
+    <table class="table table-striped table-responsive table-bordered">
+        <thead>
+            <tr>
+                <!--<th>Id</th>-->
+                <th>Partenaires</th>
+                <th>Collectivites</th>
+                <th>Contrat</th>
+                <th>Libelle</th>
+                <th>Ordre</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th>Pdfsource</th>
+                <!--<th>Commentaire</th>
+                <th>Updateat</th>
+                <th>Createdat</th>-->
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cnpDocument in cnpDocuments %}
+            <tr>
+                <!--<td><a href="{{ path('cnpdocument_show', { 'id': cnpDocument.id }) }}">{{ cnpDocument.id }}</a></td>-->
+                <td>{{ cnpDocument.partenaires }}</td>
+                <td>{{ cnpDocument.collectivites }}</td>
+                <td>{{ cnpDocument.contrat }}</td>
+                <td>{{ cnpDocument.libelle }}</td>
+                <td>{{ cnpDocument.ordre }}</td>
+                <td>{{ cnpDocument.type }}</td>
+                <td>{{ cnpDocument.reference }}</td>
+                <td><a href="{{ asset('uploads/pdf/' ~ cnpDocument.pdfSource.title) }}">{{ cnpDocument.pdfSource.title }}</a></td>
+                <!--<td>{{ cnpDocument.commentaire }}</td>
+                <td>{% if cnpDocument.updateAt %}{{ cnpDocument.updateAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if cnpDocument.createdAt %}{{ cnpDocument.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>-->
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('cnpdocument_show', { 'id': cnpDocument.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('cnpdocument_edit', { 'id': cnpDocument.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+
+    <a href="{{ path('cnpdocument_new') }}">
+        <button type="button" class="btn btn-primary">Créer un paramètre</button>
+    </a>
+{% endblock %}

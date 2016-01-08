@@ -73,10 +73,11 @@ class CnpDocument
     private $reference;
 
     /**
-     * @ORM\Column(type="string")
+     * @var Pdf
      *
-     * @Assert\NotBlank(message="Please, upload the product brochure as a PDF file.")
-     * @Assert\File(mimeTypes={ "application/pdf" })
+     * @ORM\OneToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     * @Assert\Valid()
      */
     private $pdfSource;
 
@@ -281,30 +282,6 @@ class CnpDocument
     }
 
     /**
-     * Set pdfSource
-     *
-     * @param string $pdfSource
-     *
-     * @return CnpDocument
-     */
-    public function setPdfSource($pdfSource)
-    {
-        $this->pdfSource = $pdfSource;
-
-        return $this;
-    }
-
-    /**
-     * Get pdfSource
-     *
-     * @return string
-     */
-    public function getPdfSource()
-    {
-        return $this->pdfSource;
-    }
-
-    /**
      * Set commentaire
      *
      * @param string $commentaire
@@ -376,4 +353,3 @@ class CnpDocument
         return $this->createdAt;
     }
 }
-

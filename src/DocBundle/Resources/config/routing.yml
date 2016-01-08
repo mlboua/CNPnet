@@ -2,6 +2,10 @@ doc_cnpdocument:
     resource: "@DocBundle/Resources/config/routing/cnpdocument.yml"
     prefix:   /cnpdocument
 
+doc_reseau:
+    resource: "@DocBundle/Resources/config/routing/reseau.yml"
+    prefix:   /reseau
+
 doc_homepage:
     path:     /
     defaults: { _controller: DocBundle:Default:index }

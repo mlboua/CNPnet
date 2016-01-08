@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}CNPNet{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap-theme.min.css">
+        {% endblock %}
+    </head>
+    <body>
+    <div class="container">
+        <div id="header" class="jumbotron">
+
+            <h1>Données de paramètrage</h1>
+        </div>
+        <div class="row">
+            <div id="menu" class="col-md-2">
+                <h3>Menu</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="{{ path('doc_homepage') }}">Accueil</a></li>
+                    <li><a href="{{ path('cnpdocument_index') }}">Paramètrage</a></li>
+                    <li><a href="{{ path('reseau_index') }}">Réseaux</a></li>
+                    <li><a href="{{ path('reseau_index') }}">Charger un CSV</a></li>
+                </ul>
+            </div>
+            <div id="content" class="col-md-10">
+                {% block body %}
+
+                {% endblock %}
+            </div>
+
+        </div>
+        <hr>
+        <footer>
+            <p>CNPNet © {{ 'now'|date('Y') }}.</p>
+        </footer>
+    </div>
+
+
+        {% block javascripts %}
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        {% endblock %}
+    </body>
+</html>

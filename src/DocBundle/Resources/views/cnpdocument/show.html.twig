@@ -1,0 +1,72 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>CnpDocument</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ cnpDocument.id }}</td>
+            </tr>
+            <tr>
+                <th>Partenaires</th>
+                <td>{{ cnpDocument.partenaires }}</td>
+            </tr>
+            <tr>
+                <th>Collectivites</th>
+                <td>{{ cnpDocument.collectivites }}</td>
+            </tr>
+            <tr>
+                <th>Contrat</th>
+                <td>{{ cnpDocument.contrat }}</td>
+            </tr>
+            <tr>
+                <th>Libelle</th>
+                <td>{{ cnpDocument.libelle }}</td>
+            </tr>
+            <tr>
+                <th>Ordre</th>
+                <td>{{ cnpDocument.ordre }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ cnpDocument.type }}</td>
+            </tr>
+            <tr>
+                <th>Reference</th>
+                <td>{{ cnpDocument.reference }}</td>
+            </tr>
+            <tr>
+                <th>Pdfsource</th>
+                <td><a href="{{ asset('uploads/pdf/' ~ cnpDocument.pdfSource.title) }}">{{ cnpDocument.pdfSource.title }}</a></td>
+            </tr>
+            <tr>
+                <th>Commentaire</th>
+                <td>{{ cnpDocument.commentaire }}</td>
+            </tr>
+            <tr>
+                <th>Updateat</th>
+                <td>{% if cnpDocument.updateAt %}{{ cnpDocument.updateAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{% if cnpDocument.createdAt %}{{ cnpDocument.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('cnpdocument_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('cnpdocument_edit', { 'id': cnpDocument.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

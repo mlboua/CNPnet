@@ -1,0 +1,41 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>Reseau list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reseau in reseaus %}
+            <tr>
+                <td><a href="{{ path('reseau_show', { 'id': reseau.id }) }}">{{ reseau.id }}</a></td>
+                <td>{{ reseau.code }}</td>
+                <td>{{ reseau.name }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('reseau_show', { 'id': reseau.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('reseau_new') }}">Create a new entry</a>
+        </li>
+    </ul>
+{% endblock %}

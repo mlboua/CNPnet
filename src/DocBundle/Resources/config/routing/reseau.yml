@@ -1,0 +1,24 @@
+reseau_index:
+    path:     /
+    defaults: { _controller: "DocBundle:Reseau:index" }
+    methods:  GET
+
+reseau_show:
+    path:     /{id}/show
+    defaults: { _controller: "DocBundle:Reseau:show" }
+    methods:  GET
+
+reseau_new:
+    path:     /new
+    defaults: { _controller: "DocBundle:Reseau:new" }
+    methods:  [GET, POST]
+
+reseau_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "DocBundle:Reseau:edit" }
+    methods:  [GET, POST]
+
+reseau_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "DocBundle:Reseau:delete" }
+    methods:  DELETE

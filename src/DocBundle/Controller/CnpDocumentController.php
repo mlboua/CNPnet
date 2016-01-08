@@ -26,7 +26,7 @@ class CnpDocumentController extends Controller
 
         $cnpDocuments = $em->getRepository('DocBundle:CnpDocument')->findAll();
 
-        return $this->render('cnpdocument/index.html.twig', array(
+        return $this->render('DocBundle:cnpdocument:index.html.twig', array(
             'cnpDocuments' => $cnpDocuments,
         ));
     }
@@ -43,14 +43,9 @@ class CnpDocumentController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $file */
-            $file = $cnpDocument->getPdfSource();
-
-            $fileName = $this->generateFileName($cnpDocument);
-            $pdfDir = $this->container->getParameter('kernel.root_dir').'/../web/uploads/pdf';
-            $file->move($pdfDir, $fileName);
-
-            $cnpDocument->setPdfSource($fileName);
+            /*$file = $cnpDocument->getPdfSource();
+            $file->setTitle($this->generateFileName($cnpDocument));
+            $cnpDocument->setPdfSource($file);*/
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($cnpDocument);
@@ -59,7 +54,7 @@ class CnpDocumentController extends Controller
             return $this->redirectToRoute('cnpdocument_show', array('id' => $cnpDocument->getId()));
         }
 
-        return $this->render('cnpdocument/new.html.twig', array(
+        return $this->render('DocBundle:cnpdocument:new.html.twig', array(
             'cnpDocument' => $cnpDocument,
             'form' => $form->createView(),
         ));
@@ -73,7 +68,7 @@ class CnpDocumentController extends Controller
     {
         $deleteForm = $this->createDeleteForm($cnpDocument);
 
-        return $this->render('cnpdocument/show.html.twig', array(
+        return $this->render('DocBundle:cnpdocument:show.html.twig', array(
             'cnpDocument' => $cnpDocument,
             'delete_form' => $deleteForm->createView(),
         ));
@@ -85,13 +80,14 @@ class CnpDocumentController extends Controller
      */
     public function editAction(Request $request, CnpDocument $cnpDocument)
     {
-        $pdfDir = $this->container->getParameter('kernel.root_dir').'/../web/uploads/pdf';
-        $cnpDocument->setPdfSource($pdfDir.'/'.$cnpDocument->getPdfSource());
         $deleteForm = $this->createDeleteForm($cnpDocument);
         $editForm = $this->createForm('DocBundle\Form\CnpDocumentType', $cnpDocument);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            /*$file = $cnpDocument->getPdfSource();
+            $file->setTitle($this->generateFileName($cnpDocument));
+            $cnpDocument->setPdfSource($file);*/
             $em = $this->getDoctrine()->getManager();
             $em->persist($cnpDocument);
             $em->flush();
@@ -99,9 +95,9 @@ class CnpDocumentController extends Controller
             return $this->redirectToRoute('cnpdocument_edit', array('id' => $cnpDocument->getId()));
         }
 
-        return $this->render('cnpdocument/edit.html.twig', array(
+        return $this->render('DocBundle:cnpdocument:edit.html.twig', array(
             'cnpDocument' => $cnpDocument,
-            'edit_form' => $editForm->createView(),
+            'form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
     }

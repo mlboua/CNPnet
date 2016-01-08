@@ -1,0 +1,36 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>Reseau</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ reseau.id }}</td>
+            </tr>
+            <tr>
+                <th>Code</th>
+                <td>{{ reseau.code }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ reseau.name }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('reseau_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>Modification d'un paramètre</h1>
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+
+    {{ include("DocBundle:cnpdocument:form.html.twig") }}
+    <button type="submit" class="glyphicon glyphicon-ok btn-primary">Valider</button>
+
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('cnpdocument_index') }}">Back to the list</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

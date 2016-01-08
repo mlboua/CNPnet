@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="cnp_document")
  * @ORM\Entity(repositoryClass="DocBundle\Repository\CnpDocumentRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class CnpDocument
 {
@@ -73,10 +74,11 @@ class CnpDocument
     private $reference;
 
     /**
-     * @ORM\Column(type="string")
+     * @var Pdf
      *
-     * @Assert\NotBlank(message="Please, upload the product brochure as a PDF file.")
-     * @Assert\File(mimeTypes={ "application/pdf" })
+     * @ORM\OneToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     * @Assert\Valid()
      */
     private $pdfSource;
 
@@ -90,7 +92,7 @@ class CnpDocument
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="updateAt", type="datetime")
+     * @ORM\Column(name="updateAt", type="datetime", nullable=true)
      */
     private $updateAt;
 
@@ -281,30 +283,6 @@ class CnpDocument
     }
 
     /**
-     * Set pdfSource
-     *
-     * @param string $pdfSource
-     *
-     * @return CnpDocument
-     */
-    public function setPdfSource($pdfSource)
-    {
-        $this->pdfSource = $pdfSource;
-
-        return $this;
-    }
-
-    /**
-     * Get pdfSource
-     *
-     * @return string
-     */
-    public function getPdfSource()
-    {
-        return $this->pdfSource;
-    }
-
-    /**
      * Set commentaire
      *
      * @param string $commentaire
@@ -374,5 +352,29 @@ class CnpDocument
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set pdfSource
+     *
+     * @param \DocBundle\Entity\Pdf $pdfSource
+     *
+     * @return CnpDocument
+     */
+    public function setPdfSource(\DocBundle\Entity\Pdf $pdfSource = null)
+    {
+        $this->pdfSource = $pdfSource;
+
+        return $this;
+    }
+
+    /**
+     * Get pdfSource
+     *
+     * @return \DocBundle\Entity\Pdf
+     */
+    public function getPdfSource()
+    {
+        return $this->pdfSource;
     }
 }
