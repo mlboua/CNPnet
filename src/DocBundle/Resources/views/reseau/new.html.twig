@@ -1,16 +1,17 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
 
 {% block body %}
-    <h1>Reseau creation</h1>
+    <h1>Création d'un réseau</h1>
+    <div class="well">
+        {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
-    {{ form_end(form) }}
+        {{ include("DocBundle:reseau:form.html.twig") }}
+        <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Créer</button>
+        <button type="reset" class="btn btn-default btn-md">Annuler</button>
 
-    <ul>
-        <li>
-            <a href="{{ path('reseau_index') }}">Back to the list</a>
-        </li>
-    </ul>
+        {{ form_end(form) }}
+    </div>
+
+    <a href="{{ path('reseau_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
+
 {% endblock %}

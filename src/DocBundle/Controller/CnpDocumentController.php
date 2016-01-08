@@ -117,7 +117,10 @@ class CnpDocumentController extends Controller
             $em->persist($cnpDocument);
             $em->flush();
 
-            return $this->redirectToRoute('cnpdocument_edit', array('id' => $cnpDocument->getId()));
+            return $this->redirectToRoute('cnpdocument_edit', array(
+                'id' => $cnpDocument->getId(),
+                'confirmation' => true
+                ));
         }
 
         return $this->render('DocBundle:cnpdocument:edit.html.twig', array(

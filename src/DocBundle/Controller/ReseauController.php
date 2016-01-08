@@ -82,12 +82,17 @@ class ReseauController extends Controller
             $em->persist($reseau);
             $em->flush();
 
-            return $this->redirectToRoute('reseau_edit', array('id' => $reseau->getId()));
+            return $this->render('DocBundle:reseau:edit.html.twig', array(
+                'reseau' => $reseau->getId(),
+                'confirmation' => true,
+                'form' => $editForm->createView(),
+                'delete_form' => $deleteForm->createView(),
+                ));
         }
 
         return $this->render('DocBundle:reseau:edit.html.twig', array(
             'reseau' => $reseau,
-            'edit_form' => $editForm->createView(),
+            'form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
     }

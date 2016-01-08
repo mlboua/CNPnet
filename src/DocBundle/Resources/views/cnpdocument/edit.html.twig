@@ -2,6 +2,11 @@
 
 {% block body %}
     <h1>Modification d'un paramètre</h1>
+    {% if confirmation %}
+        <div class="alert alert-success">
+            <strong>Success!</strong> Le paramètre aété modifié avec succès.
+        </div>
+    {% endif %}
 <div class="well">
     {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 

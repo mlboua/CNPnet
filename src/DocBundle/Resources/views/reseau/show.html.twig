@@ -3,12 +3,12 @@
 {% block body %}
     <h1>Reseau</h1>
 
-    <table>
+    <table class="table table-striped table-responsive table-bordered">
         <tbody>
-            <tr>
+            <!--<tr>
                 <th>Id</th>
                 <td>{{ reseau.id }}</td>
-            </tr>
+            </tr>-->
             <tr>
                 <th>Code</th>
                 <td>{{ reseau.code }}</td>
@@ -19,18 +19,13 @@
             </tr>
         </tbody>
     </table>
+    <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
+        <button type="button" class="btn btn-primary">Modifier</button>
+    </a>
 
-    <ul>
-        <li>
-            <a href="{{ path('reseau_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <a href="{{ path('reseau_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
+    {{ form_start(delete_form) }}
+    <button type="button" class="btn btn-danger">Supprimer</button>
+    {{ form_end(delete_form) }}
+
 {% endblock %}
