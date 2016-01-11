@@ -1,0 +1,9 @@
+<ul class="dropdown-menu">
+    {% for reseau in reseaux %}
+        <li>
+            <a href="{{ path('reseau_show_parametrage', {'id': reseau.id}) }}">
+                {{ reseau.name }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>

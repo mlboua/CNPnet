@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use DocBundle\Entity\Reseau;
-use DocBundle\Form\ReseauType;
 
 /**
  * Reseau controller.
@@ -103,7 +102,21 @@ class ReseauController extends Controller
      */
     public function deleteAction(Request $request, Reseau $reseau)
     {
-        $form = $this->createDeleteForm($reseau);
+        $em = $this->getDoctrine()->getManager();
+        if ($reseau == null) {
+            throw $this->createNotFoundException("Le réseau  ".$reseau.getCode()." n'existe pas.");
+        }
+        if ($request->isMethod('GET')) {
+            $em->remove($reseau);
+            $em->flush();
+            $request->getSession()->getFlashBag()->add('info', 'Réseau bien supprimée.');
+            return $this->redirect($this->generateUrl('reseau_index'));
+        }
+        return $this->render('@Doc/reseau/show.html.twig', array(
+            'reseau' => $reseau
+        ));
+
+        /*$form = $this->createDeleteForm($reseau);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -112,7 +125,38 @@ class ReseauController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('reseau_index');
+        return $this->redirectToRoute('reseau_index');*/
+    }
+
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function menuAction() {
+        $em = $this->getDoctrine()->getManager();
+
+        $reseaus = $em->getRepository('DocBundle:Reseau')->findAll();
+
+        return $this->render('DocBundle:reseau:menu.html.twig', array(
+            'reseaux' => $reseaus,
+        ));
+    }
+
+    /**
+     * Finds and displays a Reseau parametrage list.
+     *
+     */
+    public function showParametrageAction(Reseau $reseau)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageWithReseau($reseau->getId());
+
+        //$deleteForm = $this->createDeleteForm($reseau);
+
+        return $this->render('DocBundle:reseau:reseau_params.html.twig', array(
+            'parametrages' => $parametrage
+            //'delete_form' => $deleteForm->createView(),
+        ));
     }
 
     /**

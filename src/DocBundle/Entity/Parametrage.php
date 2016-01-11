@@ -3,17 +3,18 @@
 namespace DocBundle\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * CnpDocument
  *
- * @ORM\Table(name="cnp_document")
- * @ORM\Entity(repositoryClass="DocBundle\Repository\CnpDocumentRepository")
+ * @ORM\Table(name="parametrage")
+ * @ORM\Entity(repositoryClass="DocBundle\Repository\ParametrageRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class CnpDocument
+class Parametrage
 {
     /**
      * @var int
@@ -25,9 +26,11 @@ class CnpDocument
     private $id;
 
     /**
-     * @var string
+     * @var ArrayCollection
      *
-     * @ORM\Column(name="partenaires", type="string", length=255)
+     * @ORM\ManyToMany(targetEntity="DocBundle\Entity\Reseau", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\Collection();
      */
     private $partenaires;
 
@@ -74,18 +77,11 @@ class CnpDocument
     private $reference;
 
     /**
-     * @var mixed
+     * @var Pdf
      *
-     * @ORM\Column(name="pdfSource", type="blob")
+     * @ORM\OneToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
      */
     private $pdfSource;
-
-    /**
-     * @var mixed
-     *
-     * @ORM\Column(name="pdf_name", type="string", length=225)
-     */
-    private $pdfName;
 
 
     /**
@@ -111,27 +107,35 @@ class CnpDocument
 
 
     /**
-     * Get id
-     *
-     * @return int
+     * Constructor
      */
-    public function getId()
+    public function __construct()
     {
-        return $this->id;
+        $this->partenaires = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * Set partenaires
+     * Add partenaire
      *
-     * @param string $partenaires
+     * @param \DocBundle\Entity\Reseau $partenaire
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
-    public function setPartenaires($partenaires)
+    public function addPartenaire(\DocBundle\Entity\Reseau $partenaire)
     {
-        $this->partenaires = $partenaires;
+        $this->partenaires[] = $partenaire;
 
         return $this;
+    }
+
+    /**
+     * Remove partenaire
+     *
+     * @param \DocBundle\Entity\Reseau $partenaire
+     */
+    public function removePartenaire(\DocBundle\Entity\Reseau $partenaire)
+    {
+        $this->partenaires->removeElement($partenaire);
     }
 
     /**
@@ -144,12 +148,24 @@ class CnpDocument
         return $this->partenaires;
     }
 
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     /**
      * Set collectivites
      *
      * @param string $collectivites
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setCollectivites($collectivites)
     {
@@ -173,7 +189,7 @@ class CnpDocument
      *
      * @param string $contrat
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setContrat($contrat)
     {
@@ -197,7 +213,7 @@ class CnpDocument
      *
      * @param string $libelle
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setLibelle($libelle)
     {
@@ -221,7 +237,7 @@ class CnpDocument
      *
      * @param string $ordre
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setOrdre($ordre)
     {
@@ -245,7 +261,7 @@ class CnpDocument
      *
      * @param string $type
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setType($type)
     {
@@ -269,7 +285,7 @@ class CnpDocument
      *
      * @param string $reference
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setReference($reference)
     {
@@ -293,7 +309,7 @@ class CnpDocument
      *
      * @param string $commentaire
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setCommentaire($commentaire)
     {
@@ -317,7 +333,7 @@ class CnpDocument
      *
      * @param DateTime $updateAt
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setUpdateAt($updateAt)
     {
@@ -341,7 +357,7 @@ class CnpDocument
      *
      * @param DateTime $createdAt
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setCreatedAt($createdAt)
     {
@@ -364,7 +380,7 @@ class CnpDocument
      * Set pdfSource
      *
      *
-     * @return CnpDocument
+     * @return Parametrage
      */
     public function setPdfSource($pdfSource)
     {
@@ -376,28 +392,10 @@ class CnpDocument
     /**
      * Get pdfSource
      *
-     * @return mixed
+     * @return Pdf
      */
     public function getPdfSource()
     {
         return $this->pdfSource;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getPdfName()
-    {
-        return $this->pdfName;
-    }
-
-    /**
-     * @param mixed $pdfName
-     */
-    public function setPdfName($pdfName)
-    {
-        $this->pdfName = $pdfName;
-    }
-
-
 }

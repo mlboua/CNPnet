@@ -24,8 +24,10 @@
     </a>
 
     <a href="{{ path('reseau_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
-    {{ form_start(delete_form) }}
+    <a href="{{ path('reseau_delete', {'id': reseau.id}) }}"><button type="button" class="btn btn-danger">Supprimer</button></a>
+
+    <!--{{ form_start(delete_form) }}
     <button type="button" class="btn btn-danger">Supprimer</button>
-    {{ form_end(delete_form) }}
+    {{ form_end(delete_form) }}-->
 
 {% endblock %}

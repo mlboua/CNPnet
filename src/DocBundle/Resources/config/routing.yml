@@ -1,6 +1,6 @@
 doc_cnpdocument:
-    resource: "@DocBundle/Resources/config/routing/cnpdocument.yml"
-    prefix:   /cnpdocument
+    resource: "@DocBundle/Resources/config/routing/parametrage.yml"
+    prefix:   /parametrage
 
 doc_reseau:
     resource: "@DocBundle/Resources/config/routing/reseau.yml"

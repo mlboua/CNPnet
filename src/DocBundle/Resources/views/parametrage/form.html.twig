@@ -2,15 +2,12 @@
     {{ form_errors(form) }}
 
     <div class="form-group">
-        {# Génération du label. #}
         {{ form_label(form.partenaires, "Partenaires", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
 
-        {# Affichage des erreurs pour ce champ précis. #}
         {{ form_errors(form.partenaires) }}
 
         <div class="col-sm-4">
-            {# Génération de l'input. #}
-            {{ form_widget(form.partenaires, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.partenaires, {'attr': {'class': 'form-control checkbox-all', 'required':'required'}}) }}
         </div>
     </div>
 
@@ -65,7 +62,7 @@
         {{ form_label(form.pdfSource, "Fichier (PDF)", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
         {{ form_errors(form.pdfSource) }}
         <div class="col-sm-4">
-            {{ form_widget(form.pdfSource, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.pdfSource.file, {'attr': {'class': 'form-control'}}) }}
         </div>
     </div>
 

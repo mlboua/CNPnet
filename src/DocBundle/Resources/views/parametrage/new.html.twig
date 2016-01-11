@@ -1,0 +1,36 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>Création d'un paramètre</h1>
+<div class="well">
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+
+    {{ include("DocBundle:parametrage:form.html.twig") }}
+    <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Créer</button>
+    <button type="reset" class="btn btn-default btn-md">Annuler</button>
+
+    {{ form_end(form) }}
+</div>
+    <ul>
+        <li>
+            <a href="{{ path('parametrage_index') }}">Retour à la liste</a>
+        </li>
+    </ul>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        checkboxAll = function(e)
+        {
+            var nameRoot = $(this).attr('name');
+            nameRoot = nameRoot.substring(0,nameRoot.lastIndexOf('['));
+            var group = 'input[type=checkbox][name^="' + nameRoot + '"]';
+            var checked = $(this).prop('checked') ? true : false;
+            $(group).prop('checked', checked);
+        };
+        $(document).ready(function()
+        {
+            $('.checkbox-all').change(checkboxAll);
+        });
+    </script>
+{% endblock %}

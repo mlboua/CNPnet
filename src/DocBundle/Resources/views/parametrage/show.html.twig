@@ -1,0 +1,73 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>Paramètrage</h1>
+
+    <table class="table table-striped table-responsive table-bordered">
+        <tbody>
+            <tr>
+                <!--<th>Id</th>
+                <td>{{ parametrage.id }}</td>-->
+            </tr>
+            <tr>
+                <th>Partenaires</th>
+                <td>
+                    {% for partn in parametrage.partenaires %}
+                        <a href="{{ path('reseau_show', { 'id': partn.id }) }}">{{ partn.name }}</a>,
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th>Collectivites</th>
+                <td>{{ parametrage.collectivites }}</td>
+            </tr>
+            <tr>
+                <th>Contrat</th>
+                <td>{{ parametrage.contrat }}</td>
+            </tr>
+            <tr>
+                <th>Libelle</th>
+                <td>{{ parametrage.libelle }}</td>
+            </tr>
+            <tr>
+                <th>Ordre</th>
+                <td>{{ parametrage.ordre }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ parametrage.type }}</td>
+            </tr>
+            <tr>
+                <th>Reference</th>
+                <td>{{ parametrage.reference }}</td>
+            </tr>
+            <tr>
+                <th>Pdfsource</th>
+                <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
+            </tr>
+            <!--<tr>
+                <th>Commentaire</th>
+                <td>{{ parametrage.commentaire }}</td>
+            </tr>
+            <tr>
+                <th>Updateat</th>
+                <td>{% if parametrage.updateAt %}{{ parametrage.updateAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{% if parametrage.createdAt %}{{ parametrage.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>-->
+        </tbody>
+    </table>
+    <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+        <button type="button" class="btn btn-primary">Modifier</button>
+    </a>
+
+    <a href="{{ path('parametrage_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
+    <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
+        <button type="button" class="btn btn-danger">Supprimer</button>
+    </a>
+    <!--{{ form_start(delete_form) }}
+    <button type="button" class="btn btn-danger">Supprimer</button>
+    {{ form_end(delete_form) }}-->
+{% endblock %}

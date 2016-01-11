@@ -1,0 +1,29 @@
+parametrage_index:
+    path:     /
+    defaults: { _controller: "DocBundle:Parametrage:index" }
+    methods:  GET
+
+parametrage_show:
+    path:     /{id}/show
+    defaults: { _controller: "DocBundle:Parametrage:show" }
+    methods:  GET
+
+parametrage_show_pdf:
+    path:     /{id}/pdf
+    defaults: { _controller: "DocBundle:Parametrage:showPdf" }
+    methods:  GET
+
+parametrage_new:
+    path:     /new
+    defaults: { _controller: "DocBundle:Parametrage:new" }
+    methods:  [GET, POST]
+
+parametrage_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "DocBundle:Parametrage:edit" }
+    methods:  [GET, POST]
+
+parametrage_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "DocBundle:Parametrage:delete" }
+    methods:  [GET, DELETE]

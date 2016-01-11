@@ -2,13 +2,12 @@
 
 namespace DocBundle\Form;
 
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CnpDocumentType extends AbstractType
+class ParametrageType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -17,7 +16,13 @@ class CnpDocumentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('partenaires')
+            ->add('partenaires', EntityType::class, array(
+                'class' => 'DocBundle\Entity\Reseau',
+                'choice_label' => 'name',
+                'expanded' => true,
+                'multiple' => true,
+                'required' => true
+            ))
             ->add('collectivites')
             ->add('contrat')
             ->add('libelle')
@@ -29,7 +34,7 @@ class CnpDocumentType extends AbstractType
             ->add('createdAt', 'datetime')*/
             //->add('pdfSource', PdfType::class)
            // ->add('Valider', SubmitType::class)
-           ->add('pdfSource', FileType::class, array('required'=> false, 'data_class' => null))
+           ->add('pdfSource',  PdfType::class)
         ;
     }
     
@@ -39,7 +44,7 @@ class CnpDocumentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'DocBundle\Entity\CnpDocument'
+            'data_class' => 'DocBundle\Entity\Parametrage'
         ));
     }
 }

@@ -10,15 +10,16 @@
     <div class="well">
         {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 
-        {{ include("DocBundle:reseau:form.html.twig") }}
+        {{ include("DocBundle:parametrage:form.html.twig") }}
         <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Modifier</button>
 
         {{ form_end(form) }}
     </div>
 
-    <a href="{{ path('reseau_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
-    <a href="{{ path('reseau_delete', {'id': reseau.id}) }}"><button type="button" class="btn btn-danger">Supprimer</button></a>
-
+    <a href="{{ path('parametrage_index') }}"><button type="button" class="btn btn-info">Retourner à la liste</button></a>
+    <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
+        <button type="button" class="btn btn-danger">Supprimer</button>
+    </a>
     <!--{{ form_start(delete_form) }}
     <button type="button" class="btn btn-danger">Supprimer</button>
     {{ form_end(delete_form) }}-->

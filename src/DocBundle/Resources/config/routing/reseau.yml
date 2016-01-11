@@ -8,6 +8,11 @@ reseau_show:
     defaults: { _controller: "DocBundle:Reseau:show" }
     methods:  GET
 
+reseau_show_parametrage:
+    path:     /{id}/parametrages
+    defaults: { _controller: "DocBundle:Reseau:showParametrage" }
+    methods:  GET
+
 reseau_new:
     path:     /new
     defaults: { _controller: "DocBundle:Reseau:new" }
@@ -21,4 +26,4 @@ reseau_edit:
 reseau_delete:
     path:     /{id}/delete
     defaults: { _controller: "DocBundle:Reseau:delete" }
-    methods:  DELETE
+    methods:  [DELETE, GET]
