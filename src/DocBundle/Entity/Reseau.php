@@ -3,6 +3,7 @@
 namespace DocBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Reseau
@@ -34,6 +35,22 @@ class Reseau
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="DocBundle\Entity\Parametrage", cascade={"persist"}, mappedBy="reseau")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $parametrages;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->parametrages = new ArrayCollection();
+    }
 
 
     /**
@@ -102,5 +119,29 @@ class Reseau
     public function getParametrages()
     {
         return $this->parametrages;
+    }
+
+    /**
+     * Add parametrage
+     *
+     * @param \DocBundle\Entity\Parametrage $parametrage
+     *
+     * @return Reseau
+     */
+    public function addParametrage(Parametrage $parametrage)
+    {
+        $this->parametrages[] = $parametrage;
+
+        return $this;
+    }
+
+    /**
+     * Remove parametrage
+     *
+     * @param \DocBundle\Entity\Parametrage $parametrage
+     */
+    public function removeParametrage(Parametrage $parametrage)
+    {
+        $this->parametrages->removeElement($parametrage);
     }
 }

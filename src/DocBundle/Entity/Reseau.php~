@@ -3,7 +3,6 @@
 namespace DocBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Reseau
@@ -35,6 +34,14 @@ class Reseau
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="DocBundle\Entity\Parametrage", cascade={"persist"}, mappedBy="reseau")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $parametrages;
 
 
     /**

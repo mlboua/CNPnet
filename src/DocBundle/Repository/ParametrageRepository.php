@@ -13,9 +13,9 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
     public function getParametrageWithReseau($reseauId)
     {
         $qb = $this->createQueryBuilder('p');
-        $qb->join('p.partenaires', 'part')
-            ->addSelect('part')
-            ->where('part.id = :id')
+        $qb->join('p.reseau', 'res')
+            ->addSelect('res')
+            ->where('res.id = :id')
             ->setParameter('id', $reseauId)
             ->orderBy('p.ordre');
         return $qb

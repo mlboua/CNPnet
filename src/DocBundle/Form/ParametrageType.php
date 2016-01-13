@@ -4,6 +4,9 @@ namespace DocBundle\Form;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,17 +19,22 @@ class ParametrageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('partenaires', EntityType::class, array(
+            ->add('reseau', EntityType::class, array(
                 'class' => 'DocBundle\Entity\Reseau',
                 'choice_label' => 'name',
-                'expanded' => true,
-                'multiple' => true,
-                'required' => true
+                'expanded' => false,
+                'multiple' => false,
+                'required' => true,
+                'placeholder' => 'Choisir le réseau',
             ))
+            ->add('partenaires', TextType::class, array(
+                  'data' => 'Tous',
+                )
+            )
             ->add('collectivites')
             ->add('contrat')
             ->add('libelle')
-            ->add('ordre')
+            ->add('ordre', IntegerType::class)
             ->add('type')
             ->add('reference')
            /* ->add('commentaire')

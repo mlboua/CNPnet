@@ -28,9 +28,15 @@ class Parametrage
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="DocBundle\Entity\Reseau", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Reseau", inversedBy="parametrages")
      * @ORM\JoinColumn(nullable=false)
-     * @Assert\Collection();
+     */
+    private $reseau;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="partenaires", type="string", length=255)
      */
     private $partenaires;
 
@@ -104,51 +110,6 @@ class Parametrage
      * @ORM\Column(name="createdAt", type="datetime", nullable=true)
      */
     private $createdAt;
-
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->partenaires = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add partenaire
-     *
-     * @param \DocBundle\Entity\Reseau $partenaire
-     *
-     * @return Parametrage
-     */
-    public function addPartenaire(\DocBundle\Entity\Reseau $partenaire)
-    {
-        $this->partenaires[] = $partenaire;
-
-        return $this;
-    }
-
-    /**
-     * Remove partenaire
-     *
-     * @param \DocBundle\Entity\Reseau $partenaire
-     */
-    public function removePartenaire(\DocBundle\Entity\Reseau $partenaire)
-    {
-        $this->partenaires->removeElement($partenaire);
-    }
-
-    /**
-     * Get partenaires
-     *
-     * @return string
-     */
-    public function getPartenaires()
-    {
-        return $this->partenaires;
-    }
-
-
 
     /**
      * Get id
@@ -397,5 +358,53 @@ class Parametrage
     public function getPdfSource()
     {
         return $this->pdfSource;
+    }
+
+    /**
+     * Set reseau
+     *
+     * @param \DocBundle\Entity\Reseau $reseau
+     *
+     * @return Parametrage
+     */
+    public function setReseau(\DocBundle\Entity\Reseau $reseau)
+    {
+        $this->reseau = $reseau;
+
+        return $this;
+    }
+
+    /**
+     * Get reseau
+     *
+     * @return \DocBundle\Entity\Reseau
+     */
+    public function getReseau()
+    {
+        return $this->reseau;
+    }
+
+    /**
+     * Set partenaires
+     *
+     * @param string $partenaires
+     *
+     * @return Parametrage
+     */
+    public function setPartenaires($partenaires)
+    {
+        $this->partenaires = $partenaires;
+
+        return $this;
+    }
+
+    /**
+     * Get partenaires
+     *
+     * @return string
+     */
+    public function getPartenaires()
+    {
+        return $this->partenaires;
     }
 }

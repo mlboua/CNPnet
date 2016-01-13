@@ -1,0 +1,45 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <h1>Import du fichier CSV</h1>
+    <div class="well">
+        {{ form_start(form, {'attr': {'class': 'form-horizontal csvform'}}) }}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+            {{ form_label(form.submitFile, "Fichier (CSV)", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
+            {{ form_errors(form.submitFile) }}
+            <div class="col-sm-4">
+                {{ form_widget(form.submitFile, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+
+        {{ form_rest(form) }}
+        <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Importer</button>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script type="application/javascript">
+        $(document).ready(function() {
+            $('.csvform').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $this.attr('action'),
+                    type: $this.attr('method'),
+                    data: $this.serialize(),
+                    //dataType: 'json', // JSON
+                    success: function(json) {
+                        if(json.reponse === 'ok') {
+                            alert('Tout est bon');
+                        } else {
+                            alert('Erreur : '+ json.reponse);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock %}

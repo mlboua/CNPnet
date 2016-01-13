@@ -2,6 +2,16 @@
     {{ form_errors(form) }}
 
     <div class="form-group">
+        {{ form_label(form.reseau, "Réseau", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
+
+        {{ form_errors(form.reseau) }}
+
+        <div class="col-sm-4">
+            {{ form_widget(form.reseau, {'attr': {'class': 'form-control checkbox-all', 'required':'required'}}) }}
+        </div>
+    </div>
+
+    <div class="form-group">
         {{ form_label(form.partenaires, "Partenaires", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
 
         {{ form_errors(form.partenaires) }}

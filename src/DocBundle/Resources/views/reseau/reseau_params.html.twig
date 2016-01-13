@@ -2,7 +2,7 @@
 
 {% block body %}
     {% if  parametrages is empty %}
-        <h1>Aucun paramètrage n'a été enregistré</h1>
+        <h2>Aucun paramètrage n'a été enregistré pour ce réseau.</h2>
     {% else %}
     <h1>La liste des paramètrages</h1>
 
@@ -17,7 +17,7 @@
                 <th>Ordre</th>
                 <th>Type</th>
                 <th>Reference</th>
-                <th>Pdfsource</th>
+                <th>Pdf</th>
                 <!--<th>Commentaire</th>
                 <th>Updateat</th>
                 <th>Createdat</th>-->
@@ -29,9 +29,7 @@
             <tr>
                 <!--<td><a href="{{ path('parametrage_show', { 'id': parametrage.id }) }}">{{ parametrage.id }}</a></td>-->
                 <td>
-                    {% for partn in parametrage.partenaires %}
-                        <a href="{{ path('reseau_show', { 'id': partn.id }) }}">{{ partn.name }}</a>,
-                    {% endfor %}
+                    {{ parametrage.partenaires }}
                 </td>
                 <td>{{ parametrage.collectivites }}</td>
                 <td>{{ parametrage.contrat }}</td>
@@ -46,10 +44,14 @@
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('parametrage_show', { 'id': parametrage.id }) }}">show</a>
+                            <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
+                                <span class="glyphicon glyphicon-remove">Supprimer</span>
+                            </a>
                         </li>
                         <li>
-                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">edit</a>
+                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                                <span class="glyphicon glyphicon-pencil">Modifier</span>
+                            </a>
                         </li>
                     </ul>
                 </td>

@@ -2,6 +2,7 @@
 
 namespace DocBundle\Controller;
 
+use DocBundle\Entity\Pdf;
 use DocBundle\Entity\Reseau;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -111,10 +112,10 @@ class ParametrageController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $parametrage->getPdfSource->setTitle($this->generateFileName($parametrage));
+            $parametrage->getPdfSource()->setTitle($this->generateFileName($parametrage));
             if($parametrage->getPdfSource() !== null) {
-                $stream = fopen($parametrage->getPdfSource(), 'rb');
-                $parametrage->setPdfSource(stream_get_contents($stream));
+                $stream = fopen($parametrage->getPdfSource()->getFile(), 'rb');
+                $parametrage->getPdfSource()->setFile(stream_get_contents($stream));
             }
 
             $em = $this->getDoctrine()->getManager();
@@ -169,6 +170,60 @@ class ParametrageController extends Controller
     }
 
     /**
+     * Import a reseau params infos from CSV file.
+     *
+     */
+    public function importCSVAction(Request $request)
+    {
+
+        $form = $this->createFormBuilder()
+            ->add('submitFile', FileType::class, array('label' => 'Fichier CSV'))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $pdfDir = $this->container->getParameter('kernel.root_dir').'/../../LB/pdf';
+            $file = $form->get('submitFile')->getData();
+            $data = $this->csvToArray($file);
+            //var_dump($data);
+            $em = $this->getDoctrine()->getManager();
+            $reseau = $em->getRepository('DocBundle:Reseau')->findOneByCode($data[0]['reseaux']);
+            foreach($data as $row )
+            {
+                $stream = fopen($pdfDir.'/'.$row['donnees technique ne pas moidifier'], 'rb');
+
+                $param = new Parametrage();
+                $pdfSource = new Pdf();
+
+                $pdfSource->setFile(stream_get_contents($stream));
+                $pdfSource->setTitle($row['donnees technique ne pas moidifier']);
+
+                $param->setPdfSource($pdfSource);
+                $param->setReseau($reseau);
+                $param->setContrat($row['contrat']);
+                $param->setCollectivites($row['collectivites']);
+                $param->setType($row['type']);
+                $param->setLibelle($row['libelle']);
+                $param->setPartenaires('Tous');
+                $param->setOrdre($row['ordre']);
+                $param->setCommentaire($row['commentaires']);
+                $param->setReference($row['reference']);
+
+                $em->persist($param);
+            }
+            $em->flush();
+            return $this->redirectToRoute('parametrage_index');
+        }
+
+        return $this->render('DocBundle:parametrage:csv_form.html.twig', array(
+            'form' => $form->createView(),
+        ));
+    }
+    
+
+    /**
      * Creates a form to delete a Parametrage entity.
      *
      * @param Parametrage $parametrage The Parametrage entity
@@ -191,5 +246,32 @@ class ParametrageController extends Controller
     private function generateFileName(Parametrage $doc)
     {
         return $doc->getContrat().'_'.$doc->getType().'_'.$doc->getReference().'.pdf';
+    }
+
+    /**
+     * @param string $filename
+     * @param string $delimiter
+     * @return array|bool
+     */
+    protected function csvToArray($filename='', $delimiter=';')
+    {
+        if(!file_exists($filename) || !is_readable($filename))
+        {
+            return false;
+        }
+        $header = null;
+        $data = array();
+        if (($handle = fopen($filename, 'r')) !== false)
+        {
+            while (false !== ($row = fgetcsv($handle, 1000, $delimiter)))
+            {
+                if(!$header)
+                    $header = $row;
+                else
+                    $data[] = array_combine($header, $row);
+            }
+            fclose($handle);
+        }
+        return $data;
     }
 }

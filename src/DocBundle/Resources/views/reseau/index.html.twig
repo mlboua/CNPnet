@@ -24,10 +24,14 @@
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('reseau_show', { 'id': reseau.id }) }}">show</a>
+                            <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
+                                <span class="glyphicon glyphicon-pencil">Modifier</span>
+                            </a>
                         </li>
                         <li>
-                            <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">edit</a>
+                            <a href="{{ path('reseau_delete', { 'id': reseau.id }) }}">
+                                <span class="glyphicon glyphicon-remove">Supprimer</span>
+                            </a>
                         </li>
                     </ul>
                 </td>

@@ -27,3 +27,8 @@ parametrage_delete:
     path:     /{id}/delete
     defaults: { _controller: "DocBundle:Parametrage:delete" }
     methods:  [GET, DELETE]
+
+parametrage_import_csv:
+    path:     /csv
+    defaults: { _controller: "DocBundle:Parametrage:importCSV" }
+    methods:  [GET, POST]
