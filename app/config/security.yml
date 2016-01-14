@@ -39,5 +39,5 @@ security:
         #- { path: /, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: ROLE_ADMIN }
         - { path: ^/parametrage/, role: ROLE_USER }
-        - { path: ^/reseau/, role: ROLE_USER }
-        - { path: ^/user/, role: ROLE_USER }
+        - { path: ^/reseau/admin/, role: ROLE_ADMIN }
+        - { path: ^/user/, role: ROLE_ADMIN }

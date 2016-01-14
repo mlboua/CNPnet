@@ -10,14 +10,37 @@ namespace DocBundle\Repository;
  */
 class ParametrageRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param $reseauId
+     * @return array
+     */
     public function getParametrageWithReseau($reseauId)
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
+            ->join('p.pdfSource', 'pdf')
             ->addSelect('res')
+            ->addSelect('pdf')
             ->where('res.id = :id')
             ->setParameter('id', $reseauId)
-            ->orderBy('p.ordre');
+            ->orderBy('p.ordre', 'ASC');
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param $reseauId
+     * @return array
+     */
+    public function getParametrages()
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->join('p.reseau', 'res')
+            ->join('p.pdfSource', 'pdf')
+            ->addSelect('res')
+            ->addSelect('pdf')
+            ->orderBy('p.ordre', 'ASC');
         return $qb
             ->getQuery()
             ->getResult();

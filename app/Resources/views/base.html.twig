@@ -38,10 +38,10 @@
                         </li>
                         <li class="divider-vertical"></li>
                         <li><a href="{{ path('parametrage_index') }}">Paramètrages</a></li>
-                        <li><a href="{{ path('reseau_index') }}">Gestion des réseaux</a></li>
                         <li class="divider-vertical"></li>
                         <li><a href="{{ path('parametrage_import_csv') }}">Charger un CSV</a></li>
-                        {% if is_granted('ROLE_USER') %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('reseau_index') }}">Gestion des réseaux</a></li>
                             <li><a href="{{ path('user_homepage') }}">Utilisateurs</a></li>
                         {% endif %}
                     </ul>

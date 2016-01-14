@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Import du fichier CSV</h1>
     <div class="well">
-        {{ form_start(form, {'attr': {'class': 'form-horizontal csvform'}}) }}
+        {{ form_start(form, {'attr': {'class': 'form-horizontal csvform', 'id': 'csvform'}}) }}
         {{ form_errors(form) }}
 
         <div class="form-group">
@@ -14,32 +14,38 @@
             </div>
         </div>
 
+        <div class="modal fade" id="myModal" role="dialog" >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Statut du chargement</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="requestStatus">Import du fichier en cours.</p>
+                        {% image '@DocBundle/Resources/public/images/default.svg' %}
+                        <img src="{{ asset_url }}" alt="loader" />
+                        {% endimage %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         {{ form_rest(form) }}
-        <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Importer</button>
+        <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">Importer</button>
 
         {{ form_end(form) }}
     </div>
 {% endblock %}
 {% block javascripts %}
+    {{ parent() }}
     <script type="application/javascript">
-        $(document).ready(function() {
-            $('.csvform').on('submit', function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: $this.attr('action'),
-                    type: $this.attr('method'),
-                    data: $this.serialize(),
-                    //dataType: 'json', // JSON
-                    success: function(json) {
-                        if(json.reponse === 'ok') {
-                            alert('Tout est bon');
-                        } else {
-                            alert('Erreur : '+ json.reponse);
-                        }
-                    }
-                });
-            });
-        });
+        //$(document).ready(function() {
+          //  synchroneRequest('#csvform');
+        //});
     </script>
-
 {% endblock %}

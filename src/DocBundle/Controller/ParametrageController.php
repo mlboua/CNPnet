@@ -27,8 +27,7 @@ class ParametrageController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $parametrages = $em->getRepository('DocBundle:Parametrage')->findAll();
-
+        $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages();
         return $this->render('DocBundle:parametrage:index.html.twig', array(
             'parametrages' => $parametrages,
         ));
@@ -41,20 +40,16 @@ class ParametrageController extends Controller
     public function newAction(Request $request)
     {
         $parametrage = new Parametrage();
-
         $form = $this->createForm('DocBundle\Form\ParametrageType', $parametrage);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $parametrage->getPdfSource()->setTitle($this->generateFileName($parametrage));
             $stream = fopen($parametrage->getPdfSource()->getFile(), 'rb');
             $parametrage->getPdfSource()->SetFile(stream_get_contents($stream));
-
             $em = $this->getDoctrine()->getManager();
             $em->persist($parametrage);
             $em->flush();
-
             return $this->redirectToRoute('parametrage_show', array('id' => $parametrage->getId()));
         }
 
@@ -95,7 +90,7 @@ class ParametrageController extends Controller
      */
     public function editAction(Request $request, Parametrage $parametrage)
     {
-        // TODO: Manage pdf data updating form
+        // TODO: Manage pdf data in updating form
         //$temp_file = tmpfile();
        // file_put_contents($temp_file, $parametrage->getPdfSource());
         //$tempname = tempnam('', 'report_');
@@ -184,24 +179,28 @@ class ParametrageController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // TODO: Change source pdf file path
+            // TODO: Change pdf file names column in the CSV file
             $pdfDir = $this->container->getParameter('kernel.root_dir').'/../../LB/pdf';
             $file = $form->get('submitFile')->getData();
             $data = $this->csvToArray($file);
-            //var_dump($data);
             $em = $this->getDoctrine()->getManager();
-            $reseau = $em->getRepository('DocBundle:Reseau')->findOneByCode($data[0]['reseaux']);
             foreach($data as $row )
             {
-                $stream = fopen($pdfDir.'/'.$row['donnees technique ne pas moidifier'], 'rb');
+                $stream = fopen($pdfDir.'/'.$row['pdf_source'], 'rb');
 
                 $param = new Parametrage();
                 $pdfSource = new Pdf();
 
-                $pdfSource->setFile(stream_get_contents($stream));
-                $pdfSource->setTitle($row['donnees technique ne pas moidifier']);
-
-                $param->setPdfSource($pdfSource);
+                $reseau = $em->getRepository('DocBundle:Reseau')->findOneByCode($row['reseaux']);
+                if (null === $reseau) {
+                    throw $this->createNotFoundException("Le réseau ".$row['reseaux']." n'existe pas.");
+                }
                 $param->setReseau($reseau);
+                $pdfSource->setFile(stream_get_contents($stream));
+                $pdfSource->setTitle($row['pdf_source']);
+                $param->setPdfSource($pdfSource);
+
                 $param->setContrat($row['contrat']);
                 $param->setCollectivites($row['collectivites']);
                 $param->setType($row['type']);
@@ -221,7 +220,6 @@ class ParametrageController extends Controller
             'form' => $form->createView(),
         ));
     }
-    
 
     /**
      * Creates a form to delete a Parametrage entity.

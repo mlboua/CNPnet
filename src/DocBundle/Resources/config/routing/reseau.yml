@@ -1,29 +1,39 @@
 reseau_index:
-    path:     /
+    path:     /admin
     defaults: { _controller: "DocBundle:Reseau:index" }
     methods:  GET
 
 reseau_show:
-    path:     /{id}/show
+    path:     /admin/{id}/show
     defaults: { _controller: "DocBundle:Reseau:show" }
     methods:  GET
+
+reseau_new:
+    path:     /admin/new
+    defaults: { _controller: "DocBundle:Reseau:new" }
+    methods:  [GET, POST]
+
+reseau_edit:
+    path:     /admin/{id}/edit
+    defaults: { _controller: "DocBundle:Reseau:edit" }
+    methods:  [GET, POST]
+
+reseau_delete:
+    path:     /admin/{id}/delete
+    defaults: { _controller: "DocBundle:Reseau:delete" }
+    methods:  [DELETE, GET]
 
 reseau_show_parametrage:
     path:     /{id}/parametrages
     defaults: { _controller: "DocBundle:Reseau:showParametrage" }
     methods:  GET
 
-reseau_new:
-    path:     /new
-    defaults: { _controller: "DocBundle:Reseau:new" }
-    methods:  [GET, POST]
+reseau_generate_params:
+    path:     /{id}/generate
+    defaults: { _controller: "DocBundle:Reseau:generateParams" }
+    methods:  POST
 
-reseau_edit:
-    path:     /{id}/edit
-    defaults: { _controller: "DocBundle:Reseau:edit" }
-    methods:  [GET, POST]
-
-reseau_delete:
-    path:     /{id}/delete
-    defaults: { _controller: "DocBundle:Reseau:delete" }
-    methods:  [DELETE, GET]
+reseau_export_params:
+    path:     /{id}/export
+    defaults: { _controller: "DocBundle:Reseau:exportParams" }
+    methods:  POST

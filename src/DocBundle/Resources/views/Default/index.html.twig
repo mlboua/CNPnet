@@ -1,5 +1,19 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+   {{ parent() }}
+   {% stylesheets '@DocBundle/Resources/public/css/*' filter='cssrewrite' %}
+      <link rel="stylesheet" href="{{ asset_url }}" />
+   {% endstylesheets %}
+{% endblock %}
+
 {% block body %}
    <h3>Accueil de l'application</h3>
+{% endblock %}
+
+{% block javascripts %}
+   {{ parent() }}
+   {% javascripts '@DocBundle/Resources/public/js/*' %}
+      <script src="{{ asset_url }}"></script>
+   {% endjavascripts %}
 {% endblock %}

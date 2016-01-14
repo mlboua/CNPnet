@@ -2,10 +2,15 @@
 
 namespace DocBundle\Controller;
 
+use DateTime;
+use DocBundle\Entity\Parametrage;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 use DocBundle\Entity\Reseau;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Reseau controller.
@@ -148,15 +153,114 @@ class ReseauController extends Controller
      */
     public function showParametrageAction(Reseau $reseau)
     {
+        $form = $this->createReseauForm($reseau, 'reseau_generate_params', 'POST');
+        $exportForm = $this->createReseauForm($reseau, 'reseau_export_params', 'POST');
         $em = $this->getDoctrine()->getManager();
         $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageWithReseau($reseau->getId());
-
-        //$deleteForm = $this->createDeleteForm($reseau);
+        //$parametrage = $reseau->getParametrages();
 
         return $this->render('DocBundle:reseau:reseau_params.html.twig', array(
-            'parametrages' => $parametrage
-            //'delete_form' => $deleteForm->createView(),
+            'parametrages' => $parametrage,
+            'reseau' => $reseau,
+            'form' => $form->createView(),
+            'exportForm' => $exportForm->createView()
         ));
+    }
+
+    /**
+     * Generate a reaseau params.
+     * TODO: Check that files are successfully created
+     *
+     */
+    public function generateParamsAction(Request $request, Reseau $reseau)
+    {
+        $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/'.$reseau->getCode();
+        $em = $this->getDoctrine()->getManager();
+        $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageWithReseau($reseau->getId());
+
+        $fs = new Filesystem();
+
+        foreach ($parametrages as $param) {
+            try {
+                $contratDir = $reseauParamsDir .'/'. $param->getContrat();
+                $fs->mkdir($contratDir);
+                file_put_contents(
+                    $contratDir .'/'. $param->getPdfSource()->getTitle(),
+                    $param->getPdfSource()->getFile()
+                );
+                $this->generateCollectiviteFile($param, $contratDir .'/'. $param->getPdfSource()->getTitle() .'.collectivites');
+            } catch (IOException $e) {
+                echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
+            }
+        }
+        return new JsonResponse('Génération des paramètrages terminée');
+    }
+
+    /**
+     * Generate a reaseau params.
+     * TODO: Check that files are successfully created
+     *
+     */
+    public function exportParamsAction(Request $request, Reseau $reseau)
+    {
+        $iterableResult = $reseau->getParametrages();
+        $handle = fopen('php://memory', 'r+');
+        $header = array(
+            'contrat',
+            'reseaux',
+            'collectivites',
+            'ordre',
+            'libelle',
+            'pdf',
+            'type',
+            'reference',
+            'pdf_source',
+            'commentaires'
+        );
+        fputcsv($handle, $header, ';');
+        foreach ($iterableResult as $row) {
+            fputcsv($handle, array(
+                    $row->getContrat(),
+                    $reseau->getCode(),
+                    $row->getCollectivites(),
+                    $row->getOrdre(),
+                    $row->getLibelle(),
+                    $row->getPdfSource()->getTitle(),
+                    $row->getType(),
+                    $row->getReference(),
+                $row->getPdfSource()->getTitle(),
+                    $row->getCommentaire()
+                ),
+                ';'
+            );
+        rewind($handle);
+        $content = stream_get_contents($handle);
+    }
+        fclose($handle);
+
+        return new Response($content, 200, array(
+            'Content-Type' => 'application/force-download',
+            'Content-Disposition' => 'attachment; filename="export.csv"'
+        ));
+    }
+
+    /**
+     * @param Parametrage $parametrage
+     * @param $path
+     */
+    protected function generateCollectiviteFile(Parametrage $parametrage, $path)
+    {
+        $now = new DateTime();
+        $now->format('d/m/Y H:i:s');
+        $content = "#CREE AUTOMATIQUEMENT LE ".$now->format('d/m/Y H:i:s');
+        $content .= "\n#----------------------------- ";
+        $content .= "\nLIBELLE=". $parametrage->getLibelle();
+        $content .= "\nORDRE=". $parametrage->getOrdre();
+        $content .= "\nPARTENAIRE=";
+        $content .= in_array($parametrage->getPartenaires(), array('*', 'tous', 'Tous')) ? '*' : $parametrage->getPartenaires();
+        $content .= "\nCOLLECTIVITES=";
+        $content .= in_array($parametrage->getCollectivites(), array('*', 'tous', 'Tous')) ? '*' : $parametrage->getCollectivites();
+        file_put_contents($path,$content);
     }
 
     /**
@@ -166,12 +270,29 @@ class ReseauController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
+    private function createReseauForm(Reseau $reseau, $actionPath, $method)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl($actionPath, array('id' => $reseau->getId())))
+            ->setMethod($method)
+            ->getForm()
+        ;
+    }
+
+
+    /**
+     * Creates a form to delete a Parametrage entity.
+     *
+     * @param Reseau $parametrage The Parametrage entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
     private function createDeleteForm(Reseau $reseau)
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('reseau_delete', array('id' => $reseau->getId())))
             ->setMethod('DELETE')
             ->getForm()
-        ;
+            ;
     }
 }
