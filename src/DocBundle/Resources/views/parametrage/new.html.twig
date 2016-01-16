@@ -1,16 +1,25 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
 
 {% block body %}
-    <h1>Création d'un paramètre</h1>
-<div class="well">
-    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+    <div class="row">
+        <h3><i class="glyphicon glyphicon-th-list"></i> Création d'un paramètrage</h3>
+        <hr>
+            <div class="panel panel-default">
 
-    {{ include("DocBundle:parametrage:form.html.twig") }}
-    <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Créer</button>
-    <button type="reset" class="btn btn-default btn-md">Annuler</button>
+                <div class="panel-body">
+                    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 
-    {{ form_end(form) }}
-</div>
+                    {{ include("DocBundle:parametrage:form.html.twig") }}
+                    <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Créer</button>
+                    <button type="reset" class="btn btn-default btn-md">Annuler</button>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+    </div>
+<!--<div class="well">
+
+</div>-->
     <ul>
         <li>
             <a href="{{ path('parametrage_index') }}">Retour à la liste</a>

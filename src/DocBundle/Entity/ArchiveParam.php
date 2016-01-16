@@ -2,19 +2,15 @@
 
 namespace DocBundle\Entity;
 
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * CnpDocument
- * 
- * @ORM\Table(name="parametrage")
- * @ORM\Entity(repositoryClass="DocBundle\Repository\ParametrageRepository")
- * @ORM\HasLifecycleCallbacks()
+ * ArchiveParam
+ *
+ * @ORM\Table(name="archive_param")
+ * @ORM\Entity(repositoryClass="DocBundle\Repository\ArchiveParamRepository")
  */
-class Parametrage
+class ArchiveParam
 {
     /**
      * @var int
@@ -26,12 +22,18 @@ class Parametrage
     private $id;
 
     /**
-     * @var ArrayCollection
+     * @var int
      *
-     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Reseau", inversedBy="parametrages")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(name="id_param", type="integer")
      */
-    private $reseau;
+    private $idParam;
+
+    /**
+     * @var Pdf
+     *
+     * @ORM\OneToOne(targetEntity="DocBundle\Entity\ArchivePdf", cascade={"persist"})
+     */
+    private $pdf;
 
     /**
      * @var string
@@ -82,13 +84,6 @@ class Parametrage
      */
     private $reference;
 
-    /**
-     * @var Pdf
-     *
-     * @ORM\OneToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
-     */
-    private $pdfSource;
-
 
     /**
      * @var string
@@ -97,6 +92,19 @@ class Parametrage
      */
     private $commentaire;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="action", type="text", nullable=true)
+     */
+    private $action;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="createdAt", type="datetime", nullable=true)
+     */
+    private $createdAt;
 
     /**
      * Get id
@@ -109,11 +117,118 @@ class Parametrage
     }
 
     /**
+     * Set id
+     *
+     * @return ArchiveParam
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * Set pdf
+     *
+     * @param \DocBundle\Entity\ArchivePdf $pdf
+     *
+     * @return ArchiveParam
+     */
+    public function setPdf(\DocBundle\Entity\ArchivePdf $pdf = null)
+    {
+        $this->pdf = $pdf;
+
+        return $this;
+    }
+
+    /**
+     * Get pdf
+     *
+     * @return \DocBundle\Entity\Pdf
+     */
+    public function getPdf()
+    {
+        return $this->pdf;
+    }
+
+    /**
+     * Set action
+     *
+     * @param \DateTime $action
+     *
+     * @return ArchiveParam
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * Get action
+     *
+     * @return \DateTime
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ArchiveParam
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set partenaires
+     *
+     * @param string $partenaires
+     *
+     * @return ArchiveParam
+     */
+    public function setPartenaires($partenaires)
+    {
+        $this->partenaires = $partenaires;
+
+        return $this;
+    }
+
+    /**
+     * Get partenaires
+     *
+     * @return string
+     */
+    public function getPartenaires()
+    {
+        return $this->partenaires;
+    }
+
+    /**
      * Set collectivites
      *
      * @param string $collectivites
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setCollectivites($collectivites)
     {
@@ -137,7 +252,7 @@ class Parametrage
      *
      * @param string $contrat
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setContrat($contrat)
     {
@@ -161,7 +276,7 @@ class Parametrage
      *
      * @param string $libelle
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setLibelle($libelle)
     {
@@ -185,7 +300,7 @@ class Parametrage
      *
      * @param string $ordre
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setOrdre($ordre)
     {
@@ -209,7 +324,7 @@ class Parametrage
      *
      * @param string $type
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setType($type)
     {
@@ -233,7 +348,7 @@ class Parametrage
      *
      * @param string $reference
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setReference($reference)
     {
@@ -257,7 +372,7 @@ class Parametrage
      *
      * @param string $commentaire
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
     public function setCommentaire($commentaire)
     {
@@ -277,73 +392,26 @@ class Parametrage
     }
 
     /**
-     * Set pdfSource
+     * Set idParam
      *
+     * @param integer $idParam
      *
-     * @return Parametrage
+     * @return ArchiveParam
      */
-    public function setPdfSource($pdfSource)
+    public function setIdParam($idParam)
     {
-        $this->pdfSource = $pdfSource;
+        $this->idParam = $idParam;
 
         return $this;
     }
 
     /**
-     * Get pdfSource
+     * Get idParam
      *
-     * @return Pdf
+     * @return integer
      */
-    public function getPdfSource()
+    public function getIdParam()
     {
-        return $this->pdfSource;
-    }
-
-    /**
-     * Set reseau
-     *
-     * @param \DocBundle\Entity\Reseau $reseau
-     *
-     * @return Parametrage
-     */
-    public function setReseau(\DocBundle\Entity\Reseau $reseau)
-    {
-        $this->reseau = $reseau;
-
-        return $this;
-    }
-
-    /**
-     * Get reseau
-     *
-     * @return \DocBundle\Entity\Reseau
-     */
-    public function getReseau()
-    {
-        return $this->reseau;
-    }
-
-    /**
-     * Set partenaires
-     *
-     * @param string $partenaires
-     *
-     * @return Parametrage
-     */
-    public function setPartenaires($partenaires)
-    {
-        $this->partenaires = $partenaires;
-
-        return $this;
-    }
-
-    /**
-     * Get partenaires
-     *
-     * @return string
-     */
-    public function getPartenaires()
-    {
-        return $this->partenaires;
+        return $this->idParam;
     }
 }

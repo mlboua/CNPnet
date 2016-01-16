@@ -45,18 +45,6 @@
                 <th>Pdfsource</th>
                 <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
             </tr>
-            <!--<tr>
-                <th>Commentaire</th>
-                <td>{{ parametrage.commentaire }}</td>
-            </tr>
-            <tr>
-                <th>Updateat</th>
-                <td>{% if parametrage.updateAt %}{{ parametrage.updateAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Createdat</th>
-                <td>{% if parametrage.createdAt %}{{ parametrage.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-            </tr>-->
         </tbody>
     </table>
     <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">

@@ -39,7 +39,7 @@ class Reseau
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="DocBundle\Entity\Parametrage", cascade={"persist"}, mappedBy="reseau", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="DocBundle\Entity\Parametrage", cascade={"persist", "remove"}, mappedBy="reseau")
      * @ORM\JoinColumn(nullable=false)
      */
     private $parametrages;

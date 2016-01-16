@@ -259,7 +259,7 @@ class ReseauController extends Controller
         $content .= "\nPARTENAIRE=";
         $content .= in_array($parametrage->getPartenaires(), array('*', 'tous', 'Tous')) ? '*' : $parametrage->getPartenaires();
         $content .= "\nCOLLECTIVITES=";
-        $content .= in_array($parametrage->getCollectivites(), array('*', 'tous', 'Tous')) ? '*' : $parametrage->getCollectivites();
+        $content .= in_array($parametrage->getCollectivites(), array('*', 'toutes', 'Toutes')) ? '*' : $parametrage->getCollectivites();
         file_put_contents($path,$content);
     }
 

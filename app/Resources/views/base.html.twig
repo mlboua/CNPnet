@@ -10,55 +10,74 @@
         {% endblock %}
     </head>
     <body>
-    <div class="container">
-        <div id="header" class="jumbotron">
+        <!-- Header -->
+        <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-toggle"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">CNPnet</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
 
-            <h1>Données de paramètrage</h1>
+                                <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">
+                                    <i class="glyphicon glyphicon-user"></i>   {{ app.user.username }} <span class="caret"></span></a>
+                                <ul id="g-account-menu" class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href="{{ path('fos_user_security_logout') }}">
+                                            <i class="glyphicon glyphicon-lock"></i>
+                                            {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            {% else %}
+                                <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div><!-- /container -->
         </div>
-        <div>
-            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
-                <a href="{{ path('fos_user_security_logout') }}">
-                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
-                </a>
-            {% else %}
-                <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
-            {% endif %}
-        </div>
-        <div class="row">
-            <div id="menu" class="col-md-2">
-                <h3>Menu</h3>
-                <nav class="nav-collapse" role="navigation">
-                    <ul class="nav">
-                        <li><a href="{{ path('doc_homepage') }}">Accueil</a></li>
-                        <li class="divider-vertical "></li>
+        <!-- /Header -->
+
+        <div class="container">
+
+            <div class="row menu">
+                <div class="col-sm-3">
+                    <h3><i class="glyphicon glyphicon-briefcase"></i> Menu</h3>
+                    <hr>
+                    <ul class="nav nav-stacked">
+                        <li><a href="{{ path('doc_homepage') }}"><i class="glyphicon glyphicon-home"></i> Accueil</a></li>
                         <li class="dropdown">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}">Réseaux <b class="caret"></b></a>
                             {{ render(controller("DocBundle:Reseau:menu")) }}
                         </li>
-                        <li class="divider-vertical"></li>
                         <li><a href="{{ path('parametrage_index') }}">Paramètrages</a></li>
-                        <li class="divider-vertical"></li>
                         <li><a href="{{ path('parametrage_import_csv') }}">Charger un CSV</a></li>
                         {% if is_granted('ROLE_ADMIN') %}
                             <li><a href="{{ path('reseau_index') }}">Gestion des réseaux</a></li>
-                            <li><a href="{{ path('user_homepage') }}">Utilisateurs</a></li>
+                            <li><a href="{{ path('user_homepage') }}"><i class="glyphicon glyphicon-user"></i> Utilisateurs</a></li>
                         {% endif %}
                     </ul>
-                </nav>
-            </div>
-            <div id="content" class="col-md-10">
-                {% block body %}
+                    <hr>
+                </div>
+                <div class="col-sm-9">
+                    {% block body %}
 
-                {% endblock %}
+                    {% endblock %}
+                </div>
+
             </div>
 
-        </div>
-        <hr>
-        <footer>
+        </div><!--/container-->
+
+        <footer class="text-center">
             <p>CNPNet © {{ 'now'|date('Y') }}.</p>
         </footer>
-    </div>
 
 
         {% block javascripts %}

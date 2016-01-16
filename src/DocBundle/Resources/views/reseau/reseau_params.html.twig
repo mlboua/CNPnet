@@ -5,68 +5,58 @@
 
 {% block body %}
     {% if  parametrages is empty %}
-        <h2>Aucun paramètrage n'a été enregistré pour ce réseau.</h2>
+        <h3><i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }}</h3>
     {% else %}
-    <h2>La liste des paramètrages de {{ reseau.name }}</h2>
-    <!--<div id="wait" >
-        <h2>Génération...</h2>
-        {% image '@DocBundle/Resources/public/images/default.svg' %}
-            <img src="{{ asset_url }}" alt="loader" />
-        {% endimage %}
-    </div>-->
-    <table class="table table-striped table-bordered table-condensed table-responsive">
-        <thead>
-            <tr>
-                <!--<th>Id</th>-->
-                <th>Partenaires</th>
-                <th>Collectivites</th>
-                <th>Contrat</th>
-                <th>Libelle</th>
-                <th>Ordre</th>
-                <th>Type</th>
-                <th>Reference</th>
-                <th>Pdf</th>
-                <!--<th>Commentaire</th>
-                <th>Updateat</th>
-                <th>Createdat</th>-->
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for parametrage in parametrages %}
-            <tr>
-                <!--<td><a href="{{ path('parametrage_show', { 'id': parametrage.id }) }}">{{ parametrage.id }}</a></td>-->
-                <td>
-                    {{ parametrage.partenaires }}
-                </td>
-                <td>{{ parametrage.collectivites }}</td>
-                <td>{{ parametrage.contrat }}</td>
-                <td>{{ parametrage.libelle }}</td>
-                <td>{{ parametrage.ordre }}</td>
-                <td>{{ parametrage.type }}</td>
-                <td>{{ parametrage.reference }}</td>
-                <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
-                <!--<td>{{ parametrage.commentaire }}</td>
-                <td>{% if parametrage.updateAt %}{{ parametrage.updateAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{% if parametrage.createdAt %}{{ parametrage.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>-->
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
-                                <span class="glyphicon glyphicon-remove">Supprimer</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
-                                <span class="glyphicon glyphicon-pencil">Modifier</span>
-                            </a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <h3><i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }}</h3>
+        <hr>
+        <table class="table table-striped table-condensed table-responsive">
+            <thead>
+                <tr>
+                    <!--<th>Id</th>-->
+                    <th>Partenaires</th>
+                    <th>Collectivites</th>
+                    <th>Contrat</th>
+                    <th>Libelle</th>
+                    <th>Ordre</th>
+                    <th>Type</th>
+                    <th>Reference</th>
+                    <th>Pdf</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for parametrage in parametrages %}
+                <tr>
+                    <!--<td><a href="{{ path('parametrage_show', { 'id': parametrage.id }) }}">{{ parametrage.id }}</a></td>-->
+                    <td>
+                        {{ parametrage.partenaires }}
+                    </td>
+                    <td>{{ parametrage.collectivites }}</td>
+                    <td>{{ parametrage.contrat }}</td>
+                    <td>{{ parametrage.libelle }}</td>
+                    <td>{{ parametrage.ordre }}</td>
+                    <td>{{ parametrage.type }}</td>
+                    <td>{{ parametrage.reference }}</td>
+                    <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
+                    <!--<td>{{ parametrage.commentaire }}</td>-->
+                    <td>
+                        <ul>
+                            <li>
+                                <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
+                                    <span class="glyphicon glyphicon-remove">Supprimer</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                                    <span class="glyphicon glyphicon-pencil">Modifier</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
     <div class="modal fade" id="myModal" role="dialog" >
         <div class="modal-dialog">

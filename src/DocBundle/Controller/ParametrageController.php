@@ -2,6 +2,9 @@
 
 namespace DocBundle\Controller;
 
+use DateTime;
+use DocBundle\Entity\ArchiveParam;
+use DocBundle\Entity\ArchivePdf;
 use DocBundle\Entity\Pdf;
 use DocBundle\Entity\Reseau;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -48,6 +51,7 @@ class ParametrageController extends Controller
             $stream = fopen($parametrage->getPdfSource()->getFile(), 'rb');
             $parametrage->getPdfSource()->SetFile(stream_get_contents($stream));
             $em = $this->getDoctrine()->getManager();
+            //$this->archive($parametrage, $em, 'création');
             $em->persist($parametrage);
             $em->flush();
             return $this->redirectToRoute('parametrage_show', array('id' => $parametrage->getId()));
@@ -114,6 +118,7 @@ class ParametrageController extends Controller
             }
 
             $em = $this->getDoctrine()->getManager();
+            $this->archive($parametrage, $em, 'Modification');
             $em->persist($parametrage);
             $em->flush();
 
@@ -143,6 +148,7 @@ class ParametrageController extends Controller
             throw $this->createNotFoundException("Le réseau  ".$parametrage.getId()." n'existe pas.");
         }
         if ($request->isMethod('GET')) {
+            $this->archive($parametrage, $em, 'Suppression');
             $em->remove($parametrage);
             $em->flush();
             $request->getSession()->getFlashBag()->add('info', 'Parametrage bien supprimée.');
@@ -210,6 +216,7 @@ class ParametrageController extends Controller
                 $param->setCommentaire($row['commentaires']);
                 $param->setReference($row['reference']);
 
+                //$this->archive($param, $em, 'création');
                 $em->persist($param);
             }
             $em->flush();
@@ -271,5 +278,33 @@ class ParametrageController extends Controller
             fclose($handle);
         }
         return $data;
+    }
+
+
+    /**
+     * @param Parametrage $parametrage
+     * @param $em
+     */
+    public function archive(Parametrage $parametrage, $em, $action)
+    {
+        $archive = new ArchiveParam();
+        $pdf = new ArchivePdf();
+
+        $archive->setIdParam($parametrage->getId());
+        $archive->setContrat($parametrage->getContrat());
+        $archive->setLibelle($parametrage->getLibelle());
+        $archive->setType($parametrage->getType());
+
+        $pdf->setTitle($parametrage->getPdfSource()->getTitle());
+        $pdf->setFile($parametrage->getPdfSource()->getFile());
+        $archive->setPdf($pdf);
+        $archive->setPartenaires($parametrage->getPartenaires());
+        $archive->setCollectivites($parametrage->getCollectivites());
+        $archive->setOrdre($parametrage->getOrdre());
+        $archive->setReference($parametrage->getReference());
+        $archive->setAction($action);
+        $archive->setCreatedAt(new DateTime());
+
+        $em->persist($archive);
     }
 }
