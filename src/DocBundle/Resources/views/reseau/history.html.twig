@@ -1,0 +1,22 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+    {% if versions is empty %}
+        <h3><i class="glyphicon glyphicon-th-list"></i> Aucun historique pour le réseau {{ reseau.name }}.
+        </h3>
+    {% else %}
+        <h3><i class="glyphicon glyphicon-th-list"></i> L'historiques du réseau {{ reseau.name }}.
+        </h3>
+
+        <div class="well">
+            <ul>
+                {% for version in versions %}
+                    <li>
+                        <a href="{{ path('version_history_params', {'id': version.id}) }}">Version {{ version.numero }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    {% endif %}
+{% endblock %}

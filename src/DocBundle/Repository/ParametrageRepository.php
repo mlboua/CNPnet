@@ -14,7 +14,7 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
      * @param $reseauId
      * @return array
      */
-    public function getParametrageWithReseau($reseauId)
+    public function getParametrageByReseau($reseauId)
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
@@ -30,7 +30,6 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param $reseauId
      * @return array
      */
     public function getParametrages()
@@ -41,6 +40,21 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect('res')
             ->addSelect('pdf')
             ->orderBy('p.ordre', 'ASC');
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return array
+     */
+    public function findOneWithPdf($id)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->join('p.pdfSource', 'pdf')
+            ->addSelect('pdf')
+            ->where('p.id = :id')
+            ->setParameter('id', $id);
         return $qb
             ->getQuery()
             ->getResult();

@@ -2,11 +2,19 @@
 
 {% block body %}
     {% if reseaus is empty %}
-    <h1>Aucun réseau n'a été enregistré.</h1>
+        <h3><i class="glyphicon glyphicon-th-list"></i> Aucun réseau engistré.
+            <a href="{{ path('reseau_new') }}">
+                <button type="button" class="btn btn-primary pull-right">Créer un réseau</button>
+            </a>
+        </h3>
     {% else %}
-        <h3><i class="glyphicon glyphicon-th-list"></i> La liste des réseaux</h3>
+        <h3><i class="glyphicon glyphicon-th-list"></i> La liste des réseaux
+            <a href="{{ path('reseau_new') }}">
+                <button type="button" class="btn btn-primary pull-right">Ajouter un réseau</button>
+            </a>
+        </h3>
         <hr>
-        <table class="table table-striped table-responsive">
+        <table class="table table-striped table-condensed responsive no-wrap table-bordered table-hover" id="source">
             <thead>
                 <tr>
                     <!--<th>Id</th>-->
@@ -22,6 +30,15 @@
                     <td>{{ reseau.code }}</td>
                     <td>{{ reseau.name }}</td>
                     <td>
+                        <!--<a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
+                            <button type="button" class="btn btn-info btn-xs inline pull-left glyphicon glyphicon-pencil" title="Modifier">
+                            </button>
+                        </a>
+
+                        <a href="{{ path('reseau_delete', { 'id': reseau.id }) }}">
+                            <button class="btn btn-danger btn-xs inline glyphicon glyphicon-trash" title="Supprimer">
+                            </button>
+                        </a>-->
                         <ul>
                             <li>
                                 <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
@@ -40,8 +57,4 @@
             </tbody>
         </table>
     {% endif %}
-
-    <a href="{{ path('reseau_new') }}">
-        <button type="button" class="btn btn-primary">Créer un réseau</button>
-    </a>
 {% endblock %}

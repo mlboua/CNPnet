@@ -1,3 +1,10 @@
+# redirecting the admin home
+#root:
+#    path: /
+#    defaults:
+#        _controller: FrameworkBundle:Redirect:redirect
+#        route: fos_user_security_login
+#        permanent: true
 user:
     resource: "@UserBundle/Resources/config/routing.yml"
     prefix:   /user

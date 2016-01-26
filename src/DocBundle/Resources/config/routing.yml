@@ -6,6 +6,10 @@ doc_reseau:
     resource: "@DocBundle/Resources/config/routing/reseau.yml"
     prefix:   /reseau
 
+doc_version:
+    resource: "@DocBundle/Resources/config/routing/version.yml"
+    prefix:   /version
+
 doc_homepage:
-    path:     /
+    path:     /home
     defaults: { _controller: DocBundle:Default:index }

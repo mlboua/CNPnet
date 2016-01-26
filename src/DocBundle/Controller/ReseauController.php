@@ -3,7 +3,10 @@
 namespace DocBundle\Controller;
 
 use DateTime;
+use DocBundle\Entity\ArchiveParam;
+use DocBundle\Entity\ArchivePdf;
 use DocBundle\Entity\Parametrage;
+use DocBundle\Entity\Version;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -45,7 +48,11 @@ class ReseauController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($reseau);
+            $versioin = new Version();
+            $versioin->setReseau($reseau);
+            $versioin->setNumero('0');
+            $versioin->setEnCours('1');
+            $em->persist($versioin);
             $em->flush();
 
             return $this->redirectToRoute('reseau_show', array('id' => $reseau->getId()));
@@ -148,20 +155,39 @@ class ReseauController extends Controller
     }
 
     /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function historicalAction() {
+        $em = $this->getDoctrine()->getManager();
+
+        $reseaus = $em->getRepository('DocBundle:Reseau')->findAll();
+
+        return $this->render('DocBundle:reseau:history_menu.html.twig', array(
+            'reseaux' => $reseaus,
+        ));
+    }
+
+    /**
      * Finds and displays a Reseau parametrage list.
      *
      */
     public function showParametrageAction(Reseau $reseau)
     {
-        $form = $this->createReseauForm($reseau, 'reseau_generate_params', 'POST');
+        $version = $reseau->getVersions()->last();
+        $form = $this->createForm('DocBundle\Form\VersionType',
+                                    $version,
+                                    array('action' => $this->generateUrl('reseau_generate_params', ['id' => $reseau->getId()]
+                                    ))
+        );
+
         $exportForm = $this->createReseauForm($reseau, 'reseau_export_params', 'POST');
         $em = $this->getDoctrine()->getManager();
-        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageWithReseau($reseau->getId());
-        //$parametrage = $reseau->getParametrages();
+        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
 
         return $this->render('DocBundle:reseau:reseau_params.html.twig', array(
             'parametrages' => $parametrage,
             'reseau' => $reseau,
+            'version' => $version,
             'form' => $form->createView(),
             'exportForm' => $exportForm->createView()
         ));
@@ -172,28 +198,59 @@ class ReseauController extends Controller
      * TODO: Check that files are successfully created
      *
      */
-    public function generateParamsAction(Request $request, Reseau $reseau)
+    public function generateParamsAction(Request $request, Reseau $reseau, Version $version)
     {
-        $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/'.$reseau->getCode();
-        $em = $this->getDoctrine()->getManager();
-        $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageWithReseau($reseau->getId());
+        $version = $reseau->getVersions()->last();
+        $form = $this->createForm('DocBundle\Form\VersionType', $version);
+        $form->handleRequest($request);
 
-        $fs = new Filesystem();
+        if($form->isSubmitted() && $form->isValid()) {
+            $version->setUser($this->getUser()->getUsername());
+            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/'.$reseau->getCode();
+            $em = $this->getDoctrine()->getManager();
+            $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
 
-        foreach ($parametrages as $param) {
-            try {
-                $contratDir = $reseauParamsDir .'/'. $param->getContrat();
-                $fs->mkdir($contratDir);
-                file_put_contents(
-                    $contratDir .'/'. $param->getPdfSource()->getTitle(),
-                    $param->getPdfSource()->getFile()
-                );
-                $this->generateCollectiviteFile($param, $contratDir .'/'. $param->getPdfSource()->getTitle() .'.collectivites');
-            } catch (IOException $e) {
-                echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
+            $fs = new Filesystem();
+            $fs->remove($reseauParamsDir);
+            foreach ($parametrages as $param) {
+                try {
+                    $contratDir = $reseauParamsDir .'/'. $param->getContrat();
+                    //$fs->remove($contratDir);
+                    $fs->mkdir($contratDir);
+                    file_put_contents(
+                        $contratDir .'/'. $param->getPdfSource()->getTitle(),
+                        $param->getPdfSource()->getFile()
+                    );
+                    $this->generateCollectiviteFile($param, $version->getNumero(), $version->getMessage(), $contratDir .'/'. $param->generateFileName('.collectivites'));
+                } catch (IOException $e) {
+                    echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
+                }
+
+                $stream = fopen($contratDir .'/'. $param->getPdfSource()->getTitle(), 'rb');
+                $pdf = new ArchivePdf();
+                $pdf->setFile(stream_get_contents($stream));
+                $pdf->setTitle($param->getPdfSource()->getTitle());
+
+                $archive = new ArchiveParam();
+                $archive->setPdfSource($pdf);
+                $archive->setParametrage($param);
+                $archive->setAction("Génération");
+
+                $version->addArchive($archive);
+                $archive->setVersioin($version);
             }
+            //$reseau->removeVersion($version);
+            $version->setEncours('0');
+            $reseau->addVersion($version);
+            $em->persist($reseau);
+            $em->flush();
+
+            return $this->redirectToRoute('reseau_show_parametrage', ['id' => $reseau->getId()]);
         }
-        return new JsonResponse('Génération des paramètrages terminée');
+
+        return new JsonResponse(array(
+            'statut' => 'Vous devez passer par le formulaire de génération'
+        ));
     }
 
     /**
@@ -248,11 +305,14 @@ class ReseauController extends Controller
      * @param Parametrage $parametrage
      * @param $path
      */
-    protected function generateCollectiviteFile(Parametrage $parametrage, $path)
+    protected function generateCollectiviteFile(Parametrage $parametrage, $version, $commentaire, $path)
     {
         $now = new DateTime();
         $now->format('d/m/Y H:i:s');
         $content = "#CREE AUTOMATIQUEMENT LE ".$now->format('d/m/Y H:i:s');
+        $content .= "\n#Utilisateur : ".$this->getUser()->getUsername()."( ".$this->getUser()->getEmail().")";
+        $content .= "\n# Version V".$version;
+        $content .= "\n# $commentaire";
         $content .= "\n#----------------------------- ";
         $content .= "\nLIBELLE=". $parametrage->getLibelle();
         $content .= "\nORDRE=". $parametrage->getOrdre();

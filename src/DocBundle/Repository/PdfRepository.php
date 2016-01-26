@@ -10,4 +10,20 @@ namespace DocBundle\Repository;
  */
 class PdfRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @return array
+     */
+    public function findPdf($id)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('p')
+            ->from('DocBundle:Pdf', 'p')
+            ->join('DocBundle:Parametrage', 'param')
+            ->where('param.id = :id')
+            ->setParameter('id', $id);
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
 }

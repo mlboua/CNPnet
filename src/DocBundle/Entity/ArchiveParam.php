@@ -3,6 +3,7 @@
 namespace DocBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * ArchiveParam
@@ -33,7 +34,7 @@ class ArchiveParam
      *
      * @ORM\OneToOne(targetEntity="DocBundle\Entity\ArchivePdf", cascade={"persist"})
      */
-    private $pdf;
+    private $pdfSource;
 
     /**
      * @var string
@@ -84,14 +85,6 @@ class ArchiveParam
      */
     private $reference;
 
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="commentaire", type="text", nullable=true)
-     */
-    private $commentaire;
-
     /**
      * @var string
      *
@@ -105,6 +98,42 @@ class ArchiveParam
      * @ORM\Column(name="createdAt", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Version", inversedBy="archives")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $version;
+
+
+    /**
+     * @param Parametrage $parametrage
+     */
+    public function setParametrage(Parametrage $parametrage)
+    {
+        $this->setIdParam($parametrage->getId());
+        $this->setContrat($parametrage->getContrat());
+        $this->setLibelle($parametrage->getLibelle());
+        $this->setType($parametrage->getType());
+        $this->setPartenaires($parametrage->getPartenaires());
+        $this->setCollectivites($parametrage->getCollectivites());
+        $this->setOrdre($parametrage->getOrdre());
+        $this->setReference($parametrage->getReference());
+        $this->setCreatedAt(new DateTime());
+    }
+
+
+    /**
+     * @param $extension
+     * @return string
+     */
+    public function generateFileName($extension)
+    {
+        $fileName = $this->getContrat().'_'.$this->getType().'_'.$this->getReference().''.$extension;
+        return $fileName;
+    }
 
     /**
      * Get id
@@ -134,9 +163,9 @@ class ArchiveParam
      *
      * @return ArchiveParam
      */
-    public function setPdf(\DocBundle\Entity\ArchivePdf $pdf = null)
+    public function setPdfSource(\DocBundle\Entity\ArchivePdf $pdf = null)
     {
-        $this->pdf = $pdf;
+        $this->pdfSource = $pdf;
 
         return $this;
     }
@@ -146,9 +175,9 @@ class ArchiveParam
      *
      * @return \DocBundle\Entity\Pdf
      */
-    public function getPdf()
+    public function getPdfSource()
     {
-        return $this->pdf;
+        return $this->pdfSource;
     }
 
     /**
@@ -368,30 +397,6 @@ class ArchiveParam
     }
 
     /**
-     * Set commentaire
-     *
-     * @param string $commentaire
-     *
-     * @return ArchiveParam
-     */
-    public function setCommentaire($commentaire)
-    {
-        $this->commentaire = $commentaire;
-
-        return $this;
-    }
-
-    /**
-     * Get commentaire
-     *
-     * @return string
-     */
-    public function getCommentaire()
-    {
-        return $this->commentaire;
-    }
-
-    /**
      * Set idParam
      *
      * @param integer $idParam
@@ -413,5 +418,53 @@ class ArchiveParam
     public function getIdParam()
     {
         return $this->idParam;
+    }
+
+    /**
+     * Set version
+     *
+     * @param \DocBundle\Entity\Version $version
+     *
+     * @return ArchiveParam
+     */
+    public function setVersioin(\DocBundle\Entity\Version $version = null)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get version
+     *
+     * @return \DocBundle\Entity\Version
+     */
+    public function getVersioin()
+    {
+        return $this->version;
+    }
+
+    /**
+     * Set version
+     *
+     * @param \DocBundle\Entity\Version $version
+     *
+     * @return ArchiveParam
+     */
+    public function setVersion(\DocBundle\Entity\Version $version = null)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get version
+     *
+     * @return \DocBundle\Entity\Version
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 }

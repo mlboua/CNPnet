@@ -1,15 +1,30 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
 
 {% block body %}
     {% if  parametrages is empty %}
-        <h3><i class="glyphicon glyphicon-th-list"></i> Aucun paramètrage n'a été enregistré</h3>
+        <h3>
+            <i class="glyphicon glyphicon-th-list"></i> Aucun paramètrage n'a été enregistré
+            <a href="{{ path('parametrage_new') }}">
+                <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
+            </a></h3>
+        </h3>
         <hr>
     {% else %}
 
-    <h3><i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages</h3>
+    <h3>
+        <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages
+        <a href="{{ path('parametrage_new') }}">
+            <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
+        </a>
+    </h3>
+
     <hr>
+
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped display table-condensed responsive no-wrap table-bordered table-hover" id="source" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>Partenaires</th>
@@ -21,6 +36,7 @@
                     <th>Reference</th>
                     <th>Pdf</th>
                     <th>Actions</th>
+                    <!--<th>Enlever</th>-->
                 </tr>
             </thead>
             <tbody>
@@ -38,18 +54,15 @@
                     <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
                     <!--<td>{{ parametrage.commentaire }}</td>-->
                     <td>
-                        <ul>
-                            <li>
-                                <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
-                                    <span class="glyphicon glyphicon-remove">Supprimer</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
-                                    <span class="glyphicon glyphicon-pencil">Modifier</span>
-                                </a>
-                            </li>
-                        </ul>
+                        <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                            <button type="button" class="btn btn-info btn-xs inline pull-left glyphicon glyphicon-pencil" title="Modifier">
+                            </button>
+                        </a>
+
+                        <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
+                            <button class="btn btn-danger btn-xs pull-right inline glyphicon glyphicon-trash" title="Supprimer">
+                            </button>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
@@ -58,8 +71,7 @@
     </div>
     {% endif %}
 
-
-    <a href="{{ path('parametrage_new') }}">
-        <button type="button" class="btn btn-primary">Créer un paramètrage</button>
-    </a>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
 {% endblock %}

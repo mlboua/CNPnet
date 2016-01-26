@@ -13,6 +13,11 @@ parametrage_show_pdf:
     defaults: { _controller: "DocBundle:Parametrage:showPdf" }
     methods:  GET
 
+parametrage_show_archive_pdf:
+    path:     /{id}/archivepdf
+    defaults: { _controller: "DocBundle:Parametrage:showArchivePdf" }
+    methods:  GET
+
 parametrage_new:
     path:     /new
     defaults: { _controller: "DocBundle:Parametrage:new" }
@@ -29,6 +34,6 @@ parametrage_delete:
     methods:  [GET, DELETE]
 
 parametrage_import_csv:
-    path:     /csv
+    path:     /csv/import
     defaults: { _controller: "DocBundle:Parametrage:importCSV" }
     methods:  [GET, POST]

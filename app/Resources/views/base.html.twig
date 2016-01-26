@@ -5,8 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}CNPNet{% endblock %}</title>
         {% block stylesheets %}
-            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap-theme.min.css">
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+            <link rel="stylesheet" href="//cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css">
+            {% stylesheets '@DocBundle/Resources/public/css/*' filter='cssrewrite' %}
+                <link rel="stylesheet" href="{{ asset_url }}" />
+            {% endstylesheets %}
         {% endblock %}
     </head>
     <body>
@@ -17,7 +21,7 @@
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="icon-toggle"></span>
                     </button>
-                    <a class="navbar-brand" href="#">CNPnet</a>
+                    <a class="navbar-brand" href="{{ path("parametrage_index") }}">CNPnet</a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -47,25 +51,36 @@
         <div class="container">
 
             <div class="row menu">
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <h3><i class="glyphicon glyphicon-briefcase"></i> Menu</h3>
                     <hr>
                     <ul class="nav nav-stacked">
                         <li><a href="{{ path('doc_homepage') }}"><i class="glyphicon glyphicon-home"></i> Accueil</a></li>
+                        <hr>
                         <li class="dropdown">
-                            <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}">Réseaux <b class="caret"></b></a>
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}">Réseau <b class="caret"></b></a>
                             {{ render(controller("DocBundle:Reseau:menu")) }}
                         </li>
-                        <li><a href="{{ path('parametrage_index') }}">Paramètrages</a></li>
-                        <li><a href="{{ path('parametrage_import_csv') }}">Charger un CSV</a></li>
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Historique <b class="caret"></b></a>
+                            {{ render(controller("DocBundle:Reseau:historical")) }}
+                        </li>
+                        <hr>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <li><a href="{{ path('reseau_index') }}">Gestion des réseaux</a></li>
-                            <li><a href="{{ path('user_homepage') }}"><i class="glyphicon glyphicon-user"></i> Utilisateurs</a></li>
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Administration <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ path('parametrage_index') }}">Paramètrages</a></li>
+                                    <li><a href="{{ path('reseau_index') }}">Réseaux</a></li>
+                                    <li><a href="{{ path('user_homepage') }}"> Utilisateurs</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="{{ path('parametrage_import_csv') }}">Charger un CSV</a></li>
                         {% endif %}
                     </ul>
                     <hr>
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-10">
                     {% block body %}
 
                     {% endblock %}
@@ -81,8 +96,13 @@
 
 
         {% block javascripts %}
-            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
             <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+            <script src="//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+            <script src="//cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js"></script>
+            {% javascripts '@DocBundle/Resources/public/js/*' %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
         {% endblock %}
     </body>
 </html>

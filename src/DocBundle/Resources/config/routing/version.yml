@@ -1,0 +1,14 @@
+reseau_generate_archive_params:
+    path:     /{id}/generate
+    defaults: { _controller: "DocBundle:Version:generateParams" }
+    methods:  POST
+
+reseau_history_versions:
+    path:     /{id}/history
+    defaults: { _controller: "DocBundle:Version:paramsHistory" }
+    methods:  GET
+
+version_history_params:
+    path:     /{id}/version
+    defaults: { _controller: "DocBundle:Version:versionHistory" }
+    methods:  GET

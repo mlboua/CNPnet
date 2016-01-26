@@ -97,6 +97,16 @@ class Parametrage
      */
     private $commentaire;
 
+    /**
+     * @param $extension
+     * @return string
+     */
+    public function generateFileName($extension)
+    {
+        $fileName = $this->getContrat().'_'.$this->getType().'_'.$this->getReference().''.$extension;
+        return $fileName;
+    }
+
 
     /**
      * Get id

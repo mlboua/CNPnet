@@ -4,22 +4,16 @@
     <div class="row">
         <h3><i class="glyphicon glyphicon-th-list"></i> Création d'un paramètrage</h3>
         <hr>
-            <div class="panel panel-default">
+        <div class="well">
+            {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 
-                <div class="panel-body">
-                    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+            {{ include("DocBundle:parametrage:form.html.twig") }}
+            <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Créer</button>
+            <button type="reset" class="btn btn-default btn-md">Annuler</button>
 
-                    {{ include("DocBundle:parametrage:form.html.twig") }}
-                    <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Créer</button>
-                    <button type="reset" class="btn btn-default btn-md">Annuler</button>
-
-                    {{ form_end(form) }}
-                </div>
-            </div>
+            {{ form_end(form) }}
+        </div>
     </div>
-<!--<div class="well">
-
-</div>-->
     <ul>
         <li>
             <a href="{{ path('parametrage_index') }}">Retour à la liste</a>

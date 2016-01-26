@@ -2,7 +2,7 @@
  * Created by scouliba on 13/01/2016.
  */
 
-$(document).ready(function() {
+/*$(document).ready(function() {
     $(document).ajaxStart(function(){
         $("#wait").css("display", "block");
     });
@@ -10,6 +10,8 @@ $(document).ready(function() {
         $("#wait").css("display", "none");
     });
 });
+
+
 
 function synchroneRequest (formName) {
     $(formName).on('submit', function(e) {
@@ -24,4 +26,4 @@ function synchroneRequest (formName) {
             }
         });
     });
-}
+}*/

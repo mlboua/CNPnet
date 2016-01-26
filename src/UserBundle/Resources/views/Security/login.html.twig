@@ -1,0 +1,74 @@
+{% extends 'UserBundle::layout.html.twig' %}
+
+{% block title %}
+    {{ parent() }} -
+    Connexion
+{% endblock %}
+{% trans_default_domain 'FOSUserBundle' %}
+{% block body %}
+
+    <h3><i class="glyphicon glyphicon-user"></i> Connexion</h3>
+    <hr>
+
+    {% block fos_user_content %}
+        <div class="row">
+            <div class="col-sm-8">
+                Bienvenue sur l’interface de paramétrage des documents statiques CNPNET.
+                Cette interface vous permet de consulter, modifier, et générer le paramétrage des documents
+                statiques pour l’ensemble des partenaires de CNP Assurances s’inscrivant dans l’application CNPnet.
+
+                <div class="panel panel-default">
+                    <div class="panel-heading"> <strong class="">Connexion</strong>
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="panel-body">
+                        <form action="{{ path("fos_user_security_check") }}" method="post" class="form-horizontal" role="form">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+                            <div class="form-group">
+                                <label for="username" class="col-sm-3 control-label">{{ 'security.login.username'|trans }}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="username" name="_username" value="{{ last_username }}" required="required" placeholder="{{ 'security.login.username'|trans }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="col-sm-3 control-label">{{ 'security.login.password'|trans }}</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" id="password" name="_password" required="required" placeholder="{{ 'security.login.password'|trans }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <div class="checkbox">
+                                        <label class="">
+                                            <input type="checkbox" id="remember_me" name="_remember_me" value="on" />{{ 'security.login.remember_me'|trans }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group last">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <input type="submit" class="btn btn-success btn-sm" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
+                                    <button type="reset" class="btn btn-default btn-sm">Reset</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="_target_path" value="doc_homepage" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <span class="">
+                    Si vous n'avez pas de compte utilisateur, vous devez demandeer la création à l'administrateur.
+                    <hr>
+                    Vous pouvez également consulter le paramétrage en connectant avec le compte <a href="">invité.</a>
+                </span>
+            </div>
+        </div>
+
+    {% endblock fos_user_content %}
+
+{% endblock %}

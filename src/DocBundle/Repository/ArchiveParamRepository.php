@@ -2,6 +2,9 @@
 
 namespace DocBundle\Repository;
 
+use DocBundle\Entity\Version;
+
+
 /**
  * ArchiveParamRepository
  *
@@ -10,4 +13,19 @@ namespace DocBundle\Repository;
  */
 class ArchiveParamRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param Version $version
+     * @return array
+     */
+    public function getArchivesByVersion(Version $version)
+    {
+        $qb = $this->createQueryBuilder('ar');
+        $qb->join('ar.version', 'v')
+            ->addSelect('v')
+            ->where('v.id = :id')
+            ->setParameter('id', $version->getId());
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
 }

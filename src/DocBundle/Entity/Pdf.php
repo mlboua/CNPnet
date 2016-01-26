@@ -34,7 +34,7 @@ class Pdf
     /**
      * @var BlobType
      *
-     * @ORM\Column(name="file", type="blob")
+     * @ORM\Column(name="file", type="blob", nullable=false)
      */
     private $file;
 

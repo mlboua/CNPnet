@@ -45,12 +45,13 @@ class Reseau
     private $parametrages;
 
     /**
-     * Constructor
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="DocBundle\Entity\Version", cascade={"persist", "remove"}, mappedBy="reseau")
+     * @ORM\JoinColumn(nullable=false)
      */
-    public function __construct()
-    {
-        $this->parametrages = new ArrayCollection();
-    }
+    private $versions;
+
 
 
     /**
@@ -144,4 +145,47 @@ class Reseau
     {
         $this->parametrages->removeElement($parametrage);
     }
+
+    /**
+     * Add version
+     *
+     * @param \DocBundle\Entity\Version $version
+     *
+     * @return Reseau
+     */
+    public function addVersion(\DocBundle\Entity\Version $version)
+    {
+        $this->versions[] = $version;
+
+        return $this;
+    }
+
+    /**
+     * Remove version
+     *
+     * @param \DocBundle\Entity\Version $version
+     */
+    public function removeVersion(\DocBundle\Entity\Version $version)
+    {
+        $this->versions->removeElement($version);
+    }
+
+    /**
+     * Get versions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->parametrages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->versions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
 }

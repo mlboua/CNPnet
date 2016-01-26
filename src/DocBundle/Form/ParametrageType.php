@@ -2,6 +2,8 @@
 
 namespace DocBundle\Form;
 
+use DocBundle\Repository\ParametrageRepository;
+use DocBundle\Repository\ReseauRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,6 +28,9 @@ class ParametrageType extends AbstractType
                 'multiple' => false,
                 'required' => true,
                 'placeholder' => 'Choisir le réseau',
+                /*'query_builder' => function(ReseauRepository $pr){
+                    $pr->getAll();
+                }*/
             ))
             ->add('partenaires', TextType::class, array(
                   'data' => 'Tous',
