@@ -93,9 +93,9 @@ class Parametrage
     /**
      * @var string
      *
-     * @ORM\Column(name="commentaire", type="text", nullable=true)
+     * @ORM\Column(name="deleting", type="boolean", nullable=true)
      */
-    private $commentaire;
+    private $deleting;
 
     /**
      * @param $extension
@@ -263,27 +263,27 @@ class Parametrage
     }
 
     /**
-     * Set commentaire
+     * Set deleting
      *
-     * @param string $commentaire
+     * @param string $deleting
      *
      * @return Parametrage
      */
-    public function setCommentaire($commentaire)
+    public function setDeleting($deleting)
     {
-        $this->commentaire = $commentaire;
+        $this->deleting = $deleting;
 
         return $this;
     }
 
     /**
-     * Get commentaire
+     * Get deleting
      *
      * @return string
      */
-    public function getCommentaire()
+    public function getDeleting()
     {
-        return $this->commentaire;
+        return $this->deleting;
     }
 
     /**

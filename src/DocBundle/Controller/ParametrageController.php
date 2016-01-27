@@ -10,6 +10,7 @@ use DocBundle\Entity\Reseau;
 use DocBundle\Entity\Version;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\File;
@@ -165,19 +166,30 @@ class ParametrageController extends Controller
             throw $this->createNotFoundException("Le réseau  ".$parametrage.getId()." n'existe pas.");
         }
         if ($request->isMethod('GET')) {
-            $currentVersion = $parametrage->getReseau()->getVersions()->last();
-            if (!$currentVersion->getEnCours()) {
-                $version = new Version();
-                $version->setEnCours('1');
-                $version->setNumero($currentVersion->getNumero() + 1);
-                $version->setReseau($parametrage->getReseau());
-                $parametrage->getReseau()->addVersion($version);
+            if ($parametrage->getDeleting()) {
+                $currentVersion = $parametrage->getReseau()->getVersions()->last();
+                if (!$currentVersion->getEnCours()) {
+                    $version = new Version();
+                    $version->setEnCours('1');
+                    $version->setNumero($currentVersion->getNumero() + 1);
+                    $version->setReseau($parametrage->getReseau());
+                    $parametrage->getReseau()->addVersion($version);
+                }
+                $id = $parametrage->getId();
+                $em->remove($parametrage);
+                $em->flush();
+                return new JsonResponse(array(
+                    'id' => $id,
+                    'status' => 'deleted'
+                ));
             }
-            $reseauId = $parametrage->getReseau()->getId();
-            $em->remove($parametrage);
+            $parametrage->setDeleting(1);
+            $em->persist($parametrage);
             $em->flush();
-            $request->getSession()->getFlashBag()->add('info', 'Parametrage bien supprimée.');
-            return $this->redirect($this->generateUrl('reseau_show_parametrage', array('id' => $reseauId)));
+            return new JsonResponse(array(
+                'id' => $parametrage->getId(),
+                'status' => 'marked'
+            ));
         }
         return $this->render('DocBundle:parametrage:show.html.twig', array(
             'parametrage' => $parametrage
@@ -193,6 +205,30 @@ class ParametrageController extends Controller
         }
 
         return $this->redirectToRoute('parametrage_index');*/
+    }
+
+    /**
+     * Deletes a Parametrage entity.
+     *
+     */
+    public function cancelDeleteAction(Request $request, Parametrage $parametrage)
+    {
+        $em = $this->getDoctrine()->getManager();
+        if ($parametrage == null) {
+            throw $this->createNotFoundException("Le réseau  ".$parametrage.getId()." n'existe pas.");
+        }
+        if ($request->isMethod('GET')) {
+            $parametrage->setDeleting(0);
+            $em->persist($parametrage);
+            $em->flush();
+            return new JsonResponse(array(
+                'id' => $parametrage->getId(),
+                'status' => 'canceled'
+            ));
+        }
+        return $this->render('DocBundle:parametrage:show.html.twig', array(
+            'parametrage' => $parametrage
+        ));
     }
 
     /**

@@ -33,6 +33,11 @@ parametrage_delete:
     defaults: { _controller: "DocBundle:Parametrage:delete" }
     methods:  [GET, DELETE]
 
+parametrage_cancel_delete:
+    path:     /{id}/cancel
+    defaults: { _controller: "DocBundle:Parametrage:cancelDelete" }
+    methods:  [GET, DELETE]
+
 parametrage_import_csv:
     path:     /csv/import
     defaults: { _controller: "DocBundle:Parametrage:importCSV" }

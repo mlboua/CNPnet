@@ -1,6 +1,11 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
 {% block stylesheets %}
     {{ parent() }}
+    <style type="text/css">
+        .editing {
+            background-color: #F0AD4E;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -15,10 +20,9 @@
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <table class="table table-striped table-condensed responsive no-wrap table-bordered table-hover" id="source">
+                    <table class="table table-striped table-condensed responsive no-wrap table-bordered" id="source">
                         <thead>
                         <tr>
-                            <!--<th>Id</th>-->
                             <th>Partenaires</th>
                             <th>Collectivites</th>
                             <th>Contrat</th>
@@ -32,7 +36,7 @@
                         </thead>
                         <tbody>
                         {% for parametrage in parametrages %}
-                            <tr>
+                            <tr class="{{ parametrage.deleting ? 'danger' : '' }}" id="param_{{ parametrage.id }}">
                                 <!--<td><a href="{{ path('parametrage_show', { 'id': parametrage.id }) }}">{{ parametrage.id }}</a></td>-->
                                 <td>
                                     {{ parametrage.partenaires }}
@@ -44,20 +48,48 @@
                                 <td>{{ parametrage.type }}</td>
                                 <td>{{ parametrage.reference }}</td>
                                 <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
-                                <!--<td>{{ parametrage.commentaire }}</td>-->
                                 <td>
-                                    <ul>
-                                        <li>
-                                            <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
-                                                <span class="glyphicon glyphicon-remove">Supprimer</span>
-                                            </a>
-                                        </li>
-                                        <li>
+                                    {% if parametrage.deleting %}
+                                        <div class="deleting">
+                                            <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-success btn-xs glyphicon glyphicon-refresh" title="Annuler la suppression">
+                                            </button>
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-remove" title="Confirmer la suppression">
+                                            </button>
+                                        </div>
+                                        <div class="not-deleting hide">
                                             <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
-                                                <span class="glyphicon glyphicon-pencil">Modifier</span>
+                                                <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
+                                                </button>
                                             </a>
-                                        </li>
-                                    </ul>
+                                            <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
+                                            </button>
+                                            <!--</a>-->
+                                        </div>
+                                    {% else %}
+                                        <div class="not-deleting">
+                                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                                                <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
+                                                </button>
+                                            </a>
+                                            <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
+                                            </button>
+                                            <!--</a>-->
+                                        </div>
+                                        <div class="deleting hide">
+                                            <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-success btn-xs glyphicon glyphicon-refresh" title="Annuler la suppression">
+                                            </button>
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-remove" title="Confirmer la suppression">
+                                            </button>
+                                        </div>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -124,6 +156,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="application/javascript">
+
         $(document).ready(function() {
             //synchroneRequest('#generateForm');
         });

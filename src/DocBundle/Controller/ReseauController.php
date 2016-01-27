@@ -111,6 +111,8 @@ class ReseauController extends Controller
     /**
      * Deletes a Reseau entity.
      *
+     * TODO: change todo request type to post
+     *
      */
     public function deleteAction(Request $request, Reseau $reseau)
     {
