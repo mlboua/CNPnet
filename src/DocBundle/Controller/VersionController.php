@@ -7,7 +7,6 @@
 
 namespace DocBundle\Controller;
 
-
 use DateTime;
 use DocBundle\Entity\ArchiveParam;
 use DocBundle\Entity\Version;
