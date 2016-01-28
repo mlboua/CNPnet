@@ -70,8 +70,28 @@
                             <li class="dropdown">
                                 <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Administration <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ path('parametrage_index') }}">Paramètrages</a></li>
-                                    <li><a href="{{ path('reseau_index') }}">Réseaux</a></li>
+                                    <li></a></li>
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" href="#">Réseaux</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a tabindex="-1" href="{{ path('reseau_new') }}">Ajouter un réseau</a></li>
+                                            <li><a href="{{ path('reseau_index') }}">Liste des réseaux</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" href="#">Paramétrages</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a tabindex="-1" href="{{ path('parametrage_new') }}">Ajouter un paramétrage</a></li>
+                                            <li><a href="{{ path('parametrage_index') }}">Liste des paramétrages</a></li>
+                                            <!--<li class="dropdown-submenu">
+                                                <a href="#">Even More..</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">3rd level</a></li>
+                                                    <li><a href="#">3rd level</a></li>
+                                                </ul>
+                                            </li>-->
+                                        </ul>
+                                    </li>
                                     <li><a href="{{ path('user_homepage') }}"> Utilisateurs</a></li>
                                 </ul>
                             </li>

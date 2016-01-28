@@ -49,9 +49,12 @@ class ParametrageController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $parametrage->getPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
-            $stream = fopen($parametrage->getPdfSource()->getFile(), 'rb');
-            $parametrage->getPdfSource()->SetFile(stream_get_contents($stream));
+            $pdf = new Pdf();
+            $pdf->setTitle($parametrage->generateFileName('.pdf'));
+            $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
+            $pdf->SetFile(stream_get_contents($stream));
+            $pdf->setParametrage($parametrage);
+            $parametrage->addPdfSource($pdf);
             $em = $this->getDoctrine()->getManager();
 
             $currentVersion = $parametrage->getReseau()->getVersions()->last();
@@ -94,7 +97,7 @@ class ParametrageController extends Controller
  */
     public function showPdfAction(Parametrage $parametrage)
     {
-        $pdfFile = $parametrage->getPdfSource()->getFile();
+        $pdfFile = $parametrage->getLastPdfSource()->getFile();
         $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
         return $response;
     }
@@ -105,7 +108,7 @@ class ParametrageController extends Controller
      */
     public function showArchivePdfAction(ArchiveParam $parametrage)
     {
-        $pdfFile = $parametrage->getPdf()->getFile();
+        $pdfFile = $parametrage->getPdfSource()->getFile();
         $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
         return $response;
     }
@@ -116,29 +119,43 @@ class ParametrageController extends Controller
      */
     public function editAction(Request $request, Parametrage $parametrage)
     {
-        // TODO: Manage pdf data in updating form
-
-        //var_dump(stream_get_contents($parametrage->getPdfSource()->getFile()));
+        // TODO: Check performance
         $deleteForm = $this->createDeleteForm($parametrage);
         $editForm = $this->createForm('DocBundle\Form\ParametrageType', $parametrage);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-
             $em = $this->getDoctrine()->getManager();
-            $parametrage->getPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
-            if($parametrage->getPdfSource()->getFile() !== null) {
-                $stream = fopen($parametrage->getPdfSource()->getFile(), 'rb');
-                $parametrage->getPdfSource()->setFile(stream_get_contents($stream));
-                //var_dump(stream_get_contents($parametrage->getPdfSource()->getFile()));
-            } /*else {
-                $parametrage->getPdfSource()->setFile($old->getPdfSource()->getFile());
-            }*/
+            $currentVersion = $parametrage->getReseau()->getVersions()->last();
+            if (!$currentVersion->getEnCours()) {
+                $version = new Version();
+                $version->setEnCours('1');
+                $version->setNumero($currentVersion->getNumero() + 1);
+                $version->setReseau($parametrage->getReseau());
+                $parametrage->getReseau()->addVersion($version);
 
+                $archive = new ArchiveParam();
+                $archive->setPdfSource($parametrage->getLastPdfSource());
+                $archive->setParametrage($parametrage);
+                $archive->setAction("Génération");
 
-            //$this->archive($old, $em, 'Modification');
-            //$em->persist($parametrage);
-            //$em->flush();
+                $version->addArchive($archive);
+                $archive->setVersioin($version);
+            }
+
+            if($parametrage->getCurrentPdf()->getFile() !== null) {
+                $pdf = new Pdf();
+                $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
+                $pdf->setFile(stream_get_contents($stream));
+                $pdf->setTitle($parametrage->generateFileName('.pdf'));
+                $pdf->setParametrage($parametrage);
+                $parametrage->addPdfSource($pdf);
+            } else {
+                $parametrage->getLastPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
+            }
+
+            $em->persist($parametrage);
+            $em->flush();
 
             return $this->render('DocBundle:parametrage:edit.html.twig', array(
                 'parametrage' => $parametrage,
@@ -161,6 +178,7 @@ class ParametrageController extends Controller
      */
     public function deleteAction(Request $request, Parametrage $parametrage)
     {
+        //TODO: Make version appear as "en cours" on delete confirmed
         $em = $this->getDoctrine()->getManager();
         if ($parametrage == null) {
             throw $this->createNotFoundException("Le réseau  ".$parametrage.getId()." n'existe pas.");
@@ -255,10 +273,8 @@ class ParametrageController extends Controller
             foreach($data as $row )
             {
                 $stream = fopen($pdfDir.'/'.$row['pdf_source'], 'rb');
-
                 $param = new Parametrage();
                 $pdfSource = new Pdf();
-
                 $reseau = $em->getRepository('DocBundle:Reseau')->findOneByCode($row['reseaux']);
                 if (null === $reseau) {
                     throw $this->createNotFoundException("Le réseau ".$row['reseaux']." n'existe pas.");
@@ -266,7 +282,8 @@ class ParametrageController extends Controller
                 $param->setReseau($reseau);
                 $pdfSource->setFile(stream_get_contents($stream));
                 $pdfSource->setTitle($row['pdf_source']);
-                $param->setPdfSource($pdfSource);
+                $pdfSource->setParametrage($param);
+                $param->addPdfSource($pdfSource);
 
                 $param->setContrat($row['contrat']);
                 $param->setCollectivites($row['collectivites']);
@@ -274,7 +291,6 @@ class ParametrageController extends Controller
                 $param->setLibelle($row['libelle']);
                 $param->setPartenaires('Tous');
                 $param->setOrdre($row['ordre']);
-                $param->setCommentaire($row['commentaires']);
                 $param->setReference($row['reference']);
 
                 $em->persist($param);
@@ -336,7 +352,7 @@ class ParametrageController extends Controller
      * @param Parametrage $parametrage
      * @param $em
      */
-    public function archive(Parametrage $parametrage, $em, $action)
+    /*public function archive(Parametrage $parametrage, $em, $action)
     {
         $archive = new ArchiveParam();
         $pdf = new ArchivePdf();
@@ -356,5 +372,5 @@ class ParametrageController extends Controller
         $archive->setAction($action);
         $archive->setCreatedAt(new DateTime());
         $em->persist($archive);
-    }
+    }*/
 }

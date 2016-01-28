@@ -47,7 +47,7 @@ class ParametrageType extends AbstractType
             ->add('createdAt', 'datetime')*/
             //->add('pdfSource', PdfType::class)
            // ->add('Valider', SubmitType::class)
-           ->add('pdfSource',  PdfType::class)
+           ->add('currentPdf',  PdfType::class)
         ;
     }
     

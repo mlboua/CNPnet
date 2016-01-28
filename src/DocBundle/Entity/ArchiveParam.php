@@ -32,7 +32,7 @@ class ArchiveParam
     /**
      * @var Pdf
      *
-     * @ORM\OneToOne(targetEntity="DocBundle\Entity\ArchivePdf", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"}, inversedBy="archives")
      */
     private $pdfSource;
 
@@ -159,11 +159,11 @@ class ArchiveParam
     /**
      * Set pdf
      *
-     * @param \DocBundle\Entity\ArchivePdf $pdf
+     * @param Pdf $pdf
      *
      * @return ArchiveParam
      */
-    public function setPdfSource(\DocBundle\Entity\ArchivePdf $pdf = null)
+    public function setPdfSource(Pdf $pdf = null)
     {
         $this->pdfSource = $pdf;
 

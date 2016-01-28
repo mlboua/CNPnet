@@ -47,7 +47,7 @@
                                 <td>{{ parametrage.ordre }}</td>
                                 <td>{{ parametrage.type }}</td>
                                 <td>{{ parametrage.reference }}</td>
-                                <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
+                                <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.lastPdfSource.title }}</a></td>
                                 <td>
                                     {% if parametrage.deleting %}
                                         <div class="deleting">
@@ -156,7 +156,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="application/javascript">
-
         $(document).ready(function() {
             //synchroneRequest('#generateForm');
         });

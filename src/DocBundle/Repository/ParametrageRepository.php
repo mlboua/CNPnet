@@ -18,7 +18,7 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
-            ->join('p.pdfSource', 'pdf')
+            ->join('p.pdfSources', 'pdf')
             ->addSelect('res')
             ->addSelect('pdf')
             ->where('res.id = :id')
@@ -36,7 +36,7 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
-            ->join('p.pdfSource', 'pdf')
+            ->join('p.pdfSources', 'pdf')
             ->addSelect('res')
             ->addSelect('pdf')
             ->orderBy('p.ordre', 'ASC');

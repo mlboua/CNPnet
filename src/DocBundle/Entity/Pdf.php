@@ -38,7 +38,21 @@ class Pdf
      */
     private $file;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Parametrage", inversedBy="pdfSources")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $parametrage;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="DocBundle\Entity\ArchiveParam", cascade={"persist", "remove"}, mappedBy="pdfSource")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $archives;
 
 
     /**
@@ -97,5 +111,70 @@ class Pdf
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * Set parametrage
+     *
+     * @param \DocBundle\Entity\Parametrage $parametrage
+     *
+     * @return Pdf
+     */
+    public function setParametrage(\DocBundle\Entity\Parametrage $parametrage)
+    {
+        $this->parametrage = $parametrage;
+
+        return $this;
+    }
+
+    /**
+     * Get parametrage
+     *
+     * @return \DocBundle\Entity\Parametrage
+     */
+    public function getParametrage()
+    {
+        return $this->parametrage;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->archives = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add archive
+     *
+     * @param \DocBundle\Entity\ArchiveParam $archive
+     *
+     * @return Pdf
+     */
+    public function addArchive(\DocBundle\Entity\ArchiveParam $archive)
+    {
+        $this->archives[] = $archive;
+
+        return $this;
+    }
+
+    /**
+     * Remove archive
+     *
+     * @param \DocBundle\Entity\ArchiveParam $archive
+     */
+    public function removeArchive(\DocBundle\Entity\ArchiveParam $archive)
+    {
+        $this->archives->removeElement($archive);
+    }
+
+    /**
+     * Get archives
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getArchives()
+    {
+        return $this->archives;
     }
 }

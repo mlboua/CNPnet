@@ -213,28 +213,25 @@ class ReseauController extends Controller
             $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
 
             $fs = new Filesystem();
-            $fs->remove($reseauParamsDir);
+            if ($fs->exists($reseauParamsDir)) {
+                $fs->remove($reseauParamsDir);
+            }
             foreach ($parametrages as $param) {
                 try {
                     $contratDir = $reseauParamsDir .'/'. $param->getContrat();
                     //$fs->remove($contratDir);
                     $fs->mkdir($contratDir);
                     file_put_contents(
-                        $contratDir .'/'. $param->getPdfSource()->getTitle(),
-                        $param->getPdfSource()->getFile()
+                        $contratDir .'/'. $param->getLastPdfSource()->getTitle(),
+                        $param->getLastPdfSource()->getFile()
                     );
                     $this->generateCollectiviteFile($param, $version->getNumero(), $version->getMessage(), $contratDir .'/'. $param->generateFileName('.collectivites'));
                 } catch (IOException $e) {
                     echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
                 }
 
-                $stream = fopen($contratDir .'/'. $param->getPdfSource()->getTitle(), 'rb');
-                $pdf = new ArchivePdf();
-                $pdf->setFile(stream_get_contents($stream));
-                $pdf->setTitle($param->getPdfSource()->getTitle());
-
                 $archive = new ArchiveParam();
-                $archive->setPdfSource($pdf);
+                $archive->setPdfSource($param->getLastPdfSource());
                 $archive->setParametrage($param);
                 $archive->setAction("Génération");
 
@@ -273,8 +270,7 @@ class ReseauController extends Controller
             'pdf',
             'type',
             'reference',
-            'pdf_source',
-            'commentaires'
+            'pdf_source'
         );
         fputcsv($handle, $header, ';');
         foreach ($iterableResult as $row) {
@@ -284,11 +280,10 @@ class ReseauController extends Controller
                     $row->getCollectivites(),
                     $row->getOrdre(),
                     $row->getLibelle(),
-                    $row->getPdfSource()->getTitle(),
+                    $row->getLastPdfSources()->getTitle(),
                     $row->getType(),
                     $row->getReference(),
-                $row->getPdfSource()->getTitle(),
-                    $row->getCommentaire()
+                    $row->getLastPdfSources()->getTitle()
                 ),
                 ';'
             );

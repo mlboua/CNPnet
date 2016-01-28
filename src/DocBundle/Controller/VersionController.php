@@ -10,8 +10,6 @@ namespace DocBundle\Controller;
 
 use DateTime;
 use DocBundle\Entity\ArchiveParam;
-use DocBundle\Entity\ArchivePdf;
-use DocBundle\Entity\Parametrage;
 use DocBundle\Entity\Version;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -115,7 +113,7 @@ class VersionController extends Controller
         $reseau = $version->getReseau();
         $form = $this->createForm('DocBundle\Form\VersionType',
             $version,
-            array('action' => $this->generateUrl('reseau_generate_params', ['id' => $reseau->getId()]
+            array('action' => $this->generateUrl('reseau_generate_archive_params', ['id' => $reseau->getId()]
             ))
         );
         $exportForm = $this->createReseauForm($reseau, 'reseau_export_params', 'POST');

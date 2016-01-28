@@ -85,9 +85,15 @@ class Parametrage
     /**
      * @var Pdf
      *
-     * @ORM\OneToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"}, mappedBy="parametrage")
      */
-    private $pdfSource;
+    private $pdfSources;
+
+    /**
+     * @var Pdf
+     *
+     */
+    private $currentPdf;
 
 
     /**
@@ -96,6 +102,75 @@ class Parametrage
      * @ORM\Column(name="deleting", type="boolean", nullable=true)
      */
     private $deleting;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->pdfSources = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add pdfSource
+     *
+     * @param \DocBundle\Entity\Pdf $pdfSource
+     *
+     * @return Parametrage
+     */
+    public function addPdfSource(\DocBundle\Entity\Pdf $pdfSource)
+    {
+        $this->pdfSources[] = $pdfSource;
+
+        return $this;
+    }
+
+    /**
+     * Remove pdfSource
+     *
+     * @param \DocBundle\Entity\Pdf $pdfSource
+     */
+    public function removePdfSource(\DocBundle\Entity\Pdf $pdfSource)
+    {
+        $this->pdfSources->removeElement($pdfSource);
+    }
+
+    /**
+     * Get pdfSources
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPdfSources()
+    {
+        return $this->pdfSources;
+    }
+
+    /**
+     * Get pdfSources
+     *
+     * @return Pdf
+     */
+    public function getLastPdfSource()
+    {
+        return $this->pdfSources->last();
+    }
+
+    /**
+     * @return Pdf
+     */
+    public function getCurrentPdf()
+    {
+        return $this->currentPdf;
+    }
+
+    /**
+     * @param Pdf $currentPdf
+     */
+    public function setCurrentPdf($currentPdf)
+    {
+        $this->currentPdf = $currentPdf;
+    }
+
 
     /**
      * @param $extension
@@ -284,29 +359,6 @@ class Parametrage
     public function getDeleting()
     {
         return $this->deleting;
-    }
-
-    /**
-     * Set pdfSource
-     *
-     *
-     * @return Parametrage
-     */
-    public function setPdfSource($pdfSource)
-    {
-        $this->pdfSource = $pdfSource;
-
-        return $this;
-    }
-
-    /**
-     * Get pdfSource
-     *
-     * @return Pdf
-     */
-    public function getPdfSource()
-    {
-        return $this->pdfSource;
     }
 
     /**
