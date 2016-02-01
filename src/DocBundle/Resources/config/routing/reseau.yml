@@ -24,8 +24,8 @@ reseau_delete:
     methods:  [DELETE, GET]
 
 reseau_show_parametrage:
-    path:     /{id}/parametrages
-    defaults: { _controller: "DocBundle:Reseau:showParametrage" }
+    path:     /{id}/parametrages/{page}
+    defaults: { _controller: "DocBundle:Reseau:showParametrage", page: 1 }
     methods:  GET
 
 reseau_generate_params:

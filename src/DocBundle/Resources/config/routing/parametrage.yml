@@ -1,6 +1,6 @@
 parametrage_index:
-    path:     /
-    defaults: { _controller: "DocBundle:Parametrage:index" }
+    path:     /{page}
+    defaults: { _controller: "DocBundle:Parametrage:index", page: 1 }
     methods:  GET
 
 parametrage_show:

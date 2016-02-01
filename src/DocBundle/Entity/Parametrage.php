@@ -104,6 +104,13 @@ class Parametrage
     private $deleting;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="editing", type="boolean", nullable=true)
+     */
+    private $editing;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -407,5 +414,29 @@ class Parametrage
     public function getPartenaires()
     {
         return $this->partenaires;
+    }
+
+    /**
+     * Set editing
+     *
+     * @param boolean $editing
+     *
+     * @return Parametrage
+     */
+    public function setEditing($editing)
+    {
+        $this->editing = $editing;
+
+        return $this;
+    }
+
+    /**
+     * Get editing
+     *
+     * @return boolean
+     */
+    public function getEditing()
+    {
+        return $this->editing;
     }
 }

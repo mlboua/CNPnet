@@ -173,8 +173,13 @@ class ReseauController extends Controller
      * Finds and displays a Reseau parametrage list.
      *
      */
-    public function showParametrageAction(Reseau $reseau)
+    public function showParametrageAction(Reseau $reseau, $page)
     {
+        /*if ($page < 1) {
+            throw $this->createNotFoundException("La page ".$page." n'existe pas.");
+        }*/
+        $maxPerPage=50;
+
         $version = $reseau->getVersions()->last();
         $form = $this->createForm('DocBundle\Form\VersionType',
                                     $version,
@@ -184,14 +189,21 @@ class ReseauController extends Controller
 
         $exportForm = $this->createReseauForm($reseau, 'reseau_export_params', 'POST');
         $em = $this->getDoctrine()->getManager();
-        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
+        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $page, $maxPerPage);
+        $maxPerPage = ceil(count($parametrage)/$maxPerPage);
+
+        /*if ($page > $maxPerPage) {
+            throw $this->createNotFoundException("La page ".$page." n'existe pas.");
+        }*/
 
         return $this->render('DocBundle:reseau:reseau_params.html.twig', array(
             'parametrages' => $parametrage,
             'reseau' => $reseau,
             'version' => $version,
             'form' => $form->createView(),
-            'exportForm' => $exportForm->createView()
+            'exportForm' => $exportForm->createView(),
+            'page' => $page,
+            'maxPerPage' => $maxPerPage,
         ));
     }
 
@@ -208,10 +220,11 @@ class ReseauController extends Controller
 
         if($form->isSubmitted() && $form->isValid()) {
             $version->setUser($this->getUser()->getUsername());
-            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/'.$reseau->getCode();
+            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../generations/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
-            $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
 
+
+            $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
             $fs = new Filesystem();
             if ($fs->exists($reseauParamsDir)) {
                 $fs->remove($reseauParamsDir);
@@ -225,7 +238,11 @@ class ReseauController extends Controller
                         $contratDir .'/'. $param->getLastPdfSource()->getTitle(),
                         $param->getLastPdfSource()->getFile()
                     );
-                    $this->generateCollectiviteFile($param, $version->getNumero(), $version->getMessage(), $contratDir .'/'. $param->generateFileName('.collectivites'));
+                    //$this->generateCollectiviteFile($param, $version->getNumero(), $version->getMessage(), $contratDir .'/'. $param->generateFileName('.collectivites'));
+                    $this->generateCollectiviteFile($param, $version->getNumero(),
+                        $version->getMessage(),
+                        $contratDir .'/'. str_replace('.pdf', '.collectivites', $param->getLastPdfSource()->getTitle())
+                    );
                 } catch (IOException $e) {
                     echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
                 }
@@ -238,7 +255,6 @@ class ReseauController extends Controller
                 $version->addArchive($archive);
                 $archive->setVersioin($version);
             }
-            //$reseau->removeVersion($version);
             $version->setEncours('0');
             $reseau->addVersion($version);
             $em->persist($reseau);
@@ -280,10 +296,10 @@ class ReseauController extends Controller
                     $row->getCollectivites(),
                     $row->getOrdre(),
                     $row->getLibelle(),
-                    $row->getLastPdfSources()->getTitle(),
+                    $row->getLastPdfSource()->getTitle(),
                     $row->getType(),
                     $row->getReference(),
-                    $row->getLastPdfSources()->getTitle()
+                    $row->getLastPdfSource()->getTitle()
                 ),
                 ';'
             );

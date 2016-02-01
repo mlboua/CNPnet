@@ -2,6 +2,8 @@
 
 namespace DocBundle\Repository;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * CnpDocumentRepository
  *
@@ -14,25 +16,25 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
      * @param $reseauId
      * @return array
      */
-    public function getParametrageByReseau($reseauId)
+    public function getParametrageByReseau($reseauId, $page = 1, $maxPerPage=20)
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
-            ->join('p.pdfSources', 'pdf')
+            ->leftJoin('p.pdfSources', 'pdf')
             ->addSelect('res')
             ->addSelect('pdf')
             ->where('res.id = :id')
             ->setParameter('id', $reseauId)
             ->orderBy('p.ordre', 'ASC');
-        return $qb
-            ->getQuery()
-            ->getResult();
+        $qb->setFirstResult(($page-1) * $maxPerPage)
+            ->setMaxResults($maxPerPage);
+        return new Paginator($qb, true);
     }
 
     /**
      * @return array
      */
-    public function getParametrages()
+    public function getParametrages($page = 1, $maxPerPage=20)
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
@@ -40,9 +42,9 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect('res')
             ->addSelect('pdf')
             ->orderBy('p.ordre', 'ASC');
-        return $qb
-            ->getQuery()
-            ->getResult();
+        $qb->setFirstResult(($page-1) * $maxPerPage)
+            ->setMaxResults($maxPerPage);
+        return new Paginator($qb, true);
     }
 
     /**

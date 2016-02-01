@@ -12,3 +12,8 @@ version_history_params:
     path:     /{id}/version
     defaults: { _controller: "DocBundle:Version:versionHistory" }
     methods:  GET
+
+version_export_params:
+    path:     /{id}/export
+    defaults: { _controller: "DocBundle:Version:exportHarchiveParams" }
+    methods:  POST

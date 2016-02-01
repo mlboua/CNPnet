@@ -1,5 +1,7 @@
 $(document).ready(function() {
     $('#source').DataTable({
+        "paging":   false,
+        "info":     false,
         language: {
             processing:     "Traitement en cours...",
             search:         "Rechercher&nbsp;:",

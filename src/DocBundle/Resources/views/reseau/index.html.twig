@@ -1,60 +1,77 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
 
 {% block body %}
-    {% if reseaus is empty %}
-        <h3><i class="glyphicon glyphicon-th-list"></i> Aucun réseau engistré.
-            <a href="{{ path('reseau_new') }}">
-                <button type="button" class="btn btn-primary pull-right">Créer un réseau</button>
-            </a>
-        </h3>
-    {% else %}
-        <h3><i class="glyphicon glyphicon-th-list"></i> La liste des réseaux
-            <a href="{{ path('reseau_new') }}">
-                <button type="button" class="btn btn-primary pull-right">Ajouter un réseau</button>
-            </a>
-        </h3>
-        <hr>
-        <table class="table table-striped table-condensed responsive no-wrap table-bordered table-hover" id="source">
-            <thead>
-                <tr>
-                    <!--<th>Id</th>-->
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for reseau in reseaus %}
-                <tr>
-                    <!--<td><a href="{{ path('reseau_show', { 'id': reseau.id }) }}">{{ reseau.id }}</a></td>-->
-                    <td>{{ reseau.code }}</td>
-                    <td>{{ reseau.name }}</td>
-                    <td>
-                        <!--<a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
-                            <button type="button" class="btn btn-info btn-xs inline pull-left glyphicon glyphicon-pencil" title="Modifier">
-                            </button>
+<div class="row">
+    <div class="col-sm-12">
+        <div class = "panel panel-success">
+            {% if reseaus is empty %}
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> Aucun réseau engistré.
+                        <a href="{{ path('reseau_new') }}">
+                            <button type="button" class="btn btn-primary pull-right">Créer un réseau</button>
                         </a>
+                    </h3>
+                </div>
+                <div class = "panel-body">
 
-                        <a href="{{ path('reseau_delete', { 'id': reseau.id }) }}">
-                            <button class="btn btn-danger btn-xs inline glyphicon glyphicon-trash" title="Supprimer">
-                            </button>
-                        </a>-->
-                        <ul>
-                            <li>
-                                <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
-                                    <span class="glyphicon glyphicon-pencil">Modifier</span>
+                </div>
+            {% else %}
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> La liste des réseaux
+                        <a href="{{ path('reseau_new') }}">
+                            <button type="button" class="btn btn-primary pull-right">Ajouter un réseau</button>
+                        </a>
+                    </h3>
+                </div>
+            <div class = "panel-body">
+
+                <table class="table table-striped table-condensed responsive no-wrap table-bordered table-hover" id="source">
+                    <thead>
+                        <tr>
+                            <!--<th>Id</th>-->
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for reseau in reseaus %}
+                        <tr>
+                            <!--<td><a href="{{ path('reseau_show', { 'id': reseau.id }) }}">{{ reseau.id }}</a></td>-->
+                            <td>{{ reseau.code }}</td>
+                            <td>{{ reseau.name }}</td>
+                            <td>
+                                <!--<a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
+                                    <button type="button" class="btn btn-info btn-xs inline pull-left glyphicon glyphicon-pencil" title="Modifier">
+                                    </button>
                                 </a>
-                            </li>
-                            <li>
+
                                 <a href="{{ path('reseau_delete', { 'id': reseau.id }) }}">
-                                    <span class="glyphicon glyphicon-remove">Supprimer</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+                                    <button class="btn btn-danger btn-xs inline glyphicon glyphicon-trash" title="Supprimer">
+                                    </button>
+                                </a>-->
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('reseau_edit', { 'id': reseau.id }) }}">
+                                            <span class="glyphicon glyphicon-pencil">Modifier</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('reseau_delete', { 'id': reseau.id }) }}">
+                                            <span class="glyphicon glyphicon-remove">Supprimer</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -115,7 +115,7 @@ class VersionController extends Controller
             array('action' => $this->generateUrl('reseau_generate_archive_params', ['id' => $reseau->getId()]
             ))
         );
-        $exportForm = $this->createReseauForm($reseau, 'reseau_export_params', 'POST');
+        $exportForm = $this->createVersionForm($version, 'version_export_params', 'POST');
         $em = $this->getDoctrine()->getManager();
         $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version);
 
@@ -128,6 +128,53 @@ class VersionController extends Controller
         ));
     }
 
+    /**
+     * Create an download csv file from table content.
+     * @param Request $request
+     * @param Version $version
+     * @return Response
+     */
+    public function exportHarchiveParamsAction(Request $request, Version $version)
+    {
+        $iterableResult = $version->getArchives();
+        $handle = fopen('php://memory', 'r+');
+        $header = array(
+            'contrat',
+            'reseaux',
+            'collectivites',
+            'ordre',
+            'libelle',
+            'pdf',
+            'type',
+            'reference',
+            'pdf_source'
+        );
+        fputcsv($handle, $header, ';');
+        foreach ($iterableResult as $row) {
+            fputcsv($handle, array(
+                $row->getContrat(),
+                $version->getReseau()->getCode(),
+                $row->getCollectivites(),
+                $row->getOrdre(),
+                $row->getLibelle(),
+                $row->getPdfSource()->getTitle(),
+                $row->getType(),
+                $row->getReference(),
+                $row->getPdfSource()->getTitle()
+            ),
+                ';'
+            );
+            rewind($handle);
+            $content = stream_get_contents($handle);
+        }
+        fclose($handle);
+
+        return new Response($content, 200, array(
+            'Content-Type' => 'application/force-download',
+            'Content-Disposition' => 'attachment; filename="export.csv"'
+        ));
+    }
+
 
     /**
      * Creates a form to delete a Reseau entity.
@@ -136,10 +183,10 @@ class VersionController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createReseauForm(Reseau $reseau, $actionPath, $method)
+    private function createVersionForm(Version $version, $actionPath, $method)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl($actionPath, array('id' => $reseau->getId())))
+            ->setAction($this->generateUrl($actionPath, array('id' => $version->getId())))
             ->setMethod($method)
             ->getForm()
             ;

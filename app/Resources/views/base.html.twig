@@ -11,6 +11,12 @@
             {% stylesheets '@DocBundle/Resources/public/css/*' filter='cssrewrite' %}
                 <link rel="stylesheet" href="{{ asset_url }}" />
             {% endstylesheets %}
+            <style type="text/css">
+                .navbar-default {
+                    background-color: #3ce776;
+                    border-color: #002364;
+                }
+            </style>
         {% endblock %}
     </head>
     <body>
@@ -21,7 +27,12 @@
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="icon-toggle"></span>
                     </button>
-                    <a class="navbar-brand" href="{{ path("parametrage_index") }}">CNPnet</a>
+                    <a class="navbar-brand" href="{{ path("parametrage_index") }}" style="max-width: 50%;">
+                        {% image '@DocBundle/Resources/public/images/logo.png' %}
+                            <img src="{{ asset_url }}" alt="loader" class="hidden-xs img-responsive"/>
+                        {% endimage %}
+                        <!--CNPnet-->
+                    </a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -52,52 +63,56 @@
 
             <div class="row menu">
                 <div class="col-sm-2">
-                    <h3><i class="glyphicon glyphicon-briefcase"></i> Menu</h3>
-                    <hr>
-                    <ul class="nav nav-stacked">
-                        <li><a href="{{ path('doc_homepage') }}"><i class="glyphicon glyphicon-home"></i> Accueil</a></li>
-                        <hr>
-                        <li class="dropdown">
-                            <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}">Réseau <b class="caret"></b></a>
-                            {{ render(controller("DocBundle:Reseau:menu")) }}
-                        </li>
-                        <li class="dropdown">
-                            <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Historique <b class="caret"></b></a>
-                            {{ render(controller("DocBundle:Reseau:historical")) }}
-                        </li>
-                        <hr>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <li class="dropdown">
-                                <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Administration <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li></a></li>
-                                    <li class="dropdown-submenu">
-                                        <a tabindex="-1" href="#">Réseaux</a>
+                    <div class = "panel panel-primary">
+                        <div class = "panel-heading">
+                            <h3 class = "panel-title"><i class="glyphicon glyphicon-briefcase"></i> Menu</h3>
+                        </div>
+                        <div class = "panel-body">
+                            <ul class="nav nav-stacked">
+                                <li><a href="{{ path('doc_homepage') }}"><i class="glyphicon glyphicon-home"></i> Accueil</a></li>
+                                <hr>
+                                <li class="dropdown">
+                                    <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}">Réseau <b class="caret"></b></a>
+                                    {{ render(controller("DocBundle:Reseau:menu")) }}
+                                </li>
+                                <li class="dropdown">
+                                    <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Historique <b class="caret"></b></a>
+                                    {{ render(controller("DocBundle:Reseau:historical")) }}
+                                </li>
+                                <hr>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <li class="dropdown">
+                                        <a data-toggle="dropdown" class="dropdown-toggle" href="{{ path('reseau_index') }}"> Administration <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
-                                            <li><a tabindex="-1" href="{{ path('reseau_new') }}">Ajouter un réseau</a></li>
-                                            <li><a href="{{ path('reseau_index') }}">Liste des réseaux</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="dropdown-submenu">
-                                        <a tabindex="-1" href="#">Paramétrages</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a tabindex="-1" href="{{ path('parametrage_new') }}">Ajouter un paramétrage</a></li>
-                                            <li><a href="{{ path('parametrage_index') }}">Liste des paramétrages</a></li>
-                                            <!--<li class="dropdown-submenu">
-                                                <a href="#">Even More..</a>
+                                            <li class="dropdown-submenu">
+                                                <a tabindex="-1" href="#">Réseaux</a>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="#">3rd level</a></li>
-                                                    <li><a href="#">3rd level</a></li>
+                                                    <li><a tabindex="-1" href="{{ path('reseau_new') }}">Ajouter un réseau</a></li>
+                                                    <li><a href="{{ path('reseau_index') }}">Liste des réseaux</a></li>
                                                 </ul>
-                                            </li>-->
+                                            </li>
+                                            <li class="dropdown-submenu">
+                                                <a tabindex="-1" href="#">Paramétrages</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a tabindex="-1" href="{{ path('parametrage_new') }}">Ajouter un paramétrage</a></li>
+                                                    <li><a href="{{ path('parametrage_index') }}">Liste des paramétrages</a></li>
+                                                    <!--<li class="dropdown-submenu">
+                                                        <a href="#">Even More..</a>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="#">3rd level</a></li>
+                                                            <li><a href="#">3rd level</a></li>
+                                                        </ul>
+                                                    </li>-->
+                                                </ul>
+                                            </li>
+                                            <li><a href="{{ path('user_homepage') }}"> Utilisateurs</a></li>
                                         </ul>
                                     </li>
-                                    <li><a href="{{ path('user_homepage') }}"> Utilisateurs</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="{{ path('parametrage_import_csv') }}">Charger un CSV</a></li>
-                        {% endif %}
-                    </ul>
+                                    <li><a href="{{ path('parametrage_import_csv') }}">Charger un CSV</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
                     <hr>
                 </div>
                 <div class="col-sm-10">

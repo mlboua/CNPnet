@@ -4,103 +4,117 @@
 {% endblock %}
 
 {% block body %}
-    {% if  parametrages is empty %}
-        <h3>
-            <i class="glyphicon glyphicon-th-list"></i> Aucun paramètrage n'a été enregistré
-            <a href="{{ path('parametrage_new') }}">
-                <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
-            </a></h3>
-        </h3>
-        <hr>
-    {% else %}
+    <div class="row">
+        <div class="col-sm-12">
+            <div class = "panel panel-success">
+            {% if  parametrages is not empty %}
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages
+                        <a href="{{ path('parametrage_new') }}">
+                            <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
+                        </a>
+                    </h3>
+                </div>
+                <div class = "panel-body">
+                    <table class="table table-striped display table-condensed responsive no-wrap table-bordered table-hover" id="source" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Partenaires</th>
+                            <th>Collectivites</th>
+                            <th>Contrat</th>
+                            <th>Libelle</th>
+                            <th>Ordre</th>
+                            <th>Type</th>
+                            <th>Reference</th>
+                            <th>Pdf</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for parametrage in parametrages %}
+                            <tr class="{{ parametrage.deleting ? 'danger' : '' }}" id="param_{{ parametrage.id }}">
+                                <td>
+                                    {{ parametrage.partenaires }}
+                                </td>
+                                <td>{{ parametrage.collectivites }}</td>
+                                <td>{{ parametrage.contrat }}</td>
+                                <td>{{ parametrage.libelle }}</td>
+                                <td>{{ parametrage.ordre }}</td>
+                                <td>{{ parametrage.type }}</td>
+                                <td>{{ parametrage.reference }}</td>
+                                <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.lastPdfSource.title }}</a></td>
+                                <td>
+                                    {% if parametrage.deleting %}
+                                        <div class="deleting">
+                                            <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-success btn-xs glyphicon glyphicon-refresh" title="Annuler la suppression">
+                                            </button>
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-remove" title="Confirmer la suppression">
+                                            </button>
+                                        </div>
+                                        <div class="not-deleting hide">
+                                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                                                <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
+                                                </button>
+                                            </a>
+                                            <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
+                                            </button>
+                                            <!--</a>-->
+                                        </div>
+                                    {% else %}
+                                        <div class="not-deleting">
+                                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                                                <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
+                                                </button>
+                                            </a>
+                                            <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
+                                            </button>
+                                            <!--</a>-->
+                                        </div>
+                                        <div class="deleting hide">
+                                            <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-success btn-xs glyphicon glyphicon-refresh" title="Annuler la suppression">
+                                            </button>
+                                            <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
+                                                     class="btn btn-danger btn-xs glyphicon glyphicon-remove" title="Confirmer la suppression">
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <ul class="pagination">
+                        {% for p in range(1, maxPerPage) %}
+                            <li{% if p == page %} class="active"{% endif %}>
+                                <a href="{{ path('parametrage_index', {'page': p}) }}">{{ p }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> Aucun paramètrage n'a été enregistré
+                        <a href="{{ path('parametrage_new') }}">
+                            <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
+                        </a>
+                    </h3>
+                </div>
+                <div class = "panel-body">
 
-    <h3>
-        <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages
-        <a href="{{ path('parametrage_new') }}">
-            <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
-        </a>
-    </h3>
-
-    <hr>
-
-    <div class="table-responsive">
-        <table class="table table-striped display table-condensed responsive no-wrap table-bordered table-hover" id="source" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th>Partenaires</th>
-                    <th>Collectivites</th>
-                    <th>Contrat</th>
-                    <th>Libelle</th>
-                    <th>Ordre</th>
-                    <th>Type</th>
-                    <th>Reference</th>
-                    <th>Pdf</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for parametrage in parametrages %}
-                <tr class="{{ parametrage.deleting ? 'danger' : '' }}" id="param_{{ parametrage.id }}">
-                    <td>
-                        {{ parametrage.partenaires }}
-                    </td>
-                    <td>{{ parametrage.collectivites }}</td>
-                    <td>{{ parametrage.contrat }}</td>
-                    <td>{{ parametrage.libelle }}</td>
-                    <td>{{ parametrage.ordre }}</td>
-                    <td>{{ parametrage.type }}</td>
-                    <td>{{ parametrage.reference }}</td>
-                    <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.lastPdfSource.title }}</a></td>
-                    <td>
-                        {% if parametrage.deleting %}
-                            <div class="deleting">
-                                <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
-                                         class="btn btn-success btn-xs glyphicon glyphicon-refresh" title="Annuler la suppression">
-                                </button>
-                                <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
-                                         class="btn btn-danger btn-xs glyphicon glyphicon-remove" title="Confirmer la suppression">
-                                </button>
-                            </div>
-                            <div class="not-deleting hide">
-                                <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
-                                    <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
-                                    </button>
-                                </a>
-                                <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
-                                <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
-                                         class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
-                                </button>
-                                <!--</a>-->
-                            </div>
-                        {% else %}
-                            <div class="not-deleting">
-                                <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
-                                    <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
-                                    </button>
-                                </a>
-                                <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
-                                <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
-                                         class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
-                                </button>
-                                <!--</a>-->
-                            </div>
-                            <div class="deleting hide">
-                                <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
-                                         class="btn btn-success btn-xs glyphicon glyphicon-refresh" title="Annuler la suppression">
-                                </button>
-                                <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
-                                         class="btn btn-danger btn-xs glyphicon glyphicon-remove" title="Confirmer la suppression">
-                                </button>
-                            </div>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </div>
+            {% endif %}
+            </div>
+        </div>
     </div>
-    {% endif %}
-
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

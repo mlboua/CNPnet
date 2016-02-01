@@ -28,13 +28,18 @@ class ParametrageController extends Controller
      * Lists all Parametrage entities.
      *
      */
-    public function indexAction()
+    public function indexAction($page)
     {
         $em = $this->getDoctrine()->getManager();
-
+        $maxPerPage=50;
         $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages();
+        if ($page > $maxPerPage) {
+            throw $this->createNotFoundException("La page ".$page." n'existe pas.");
+        }
         return $this->render('DocBundle:parametrage:index.html.twig', array(
             'parametrages' => $parametrages,
+            'maxPerPage' => $maxPerPage,
+            'page' => $page,
         ));
     }
 
@@ -137,7 +142,7 @@ class ParametrageController extends Controller
                 $archive = new ArchiveParam();
                 $archive->setPdfSource($parametrage->getLastPdfSource());
                 $archive->setParametrage($parametrage);
-                $archive->setAction("Génération");
+                $archive->setAction("Modification");
 
                 $version->addArchive($archive);
                 $archive->setVersioin($version);
@@ -251,7 +256,7 @@ class ParametrageController extends Controller
 
     /**
      * Import a reseau params infos from CSV file.
-     *
+     * TODO: refactor this method for performance
      */
     public function importCSVAction(Request $request)
     {
@@ -266,13 +271,13 @@ class ParametrageController extends Controller
 
             // TODO: Change source pdf file path
             // TODO: Change pdf file names column in the CSV file
-            $pdfDir = $this->container->getParameter('kernel.root_dir').'/../../LB/pdf';
+            $pdfDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/pdf';
             $file = $form->get('submitFile')->getData();
             $data = $this->csvToArray($file);
             $em = $this->getDoctrine()->getManager();
             foreach($data as $row )
             {
-                $stream = fopen($pdfDir.'/'.$row['pdf_source'], 'rb');
+                $stream = fopen($pdfDir.'/'.$row['contrat'].'/'.$row['pdf_source'], 'rb');
                 $param = new Parametrage();
                 $pdfSource = new Pdf();
                 $reseau = $em->getRepository('DocBundle:Reseau')->findOneByCode($row['reseaux']);
@@ -346,31 +351,4 @@ class ParametrageController extends Controller
         }
         return $data;
     }
-
-
-    /**
-     * @param Parametrage $parametrage
-     * @param $em
-     */
-    /*public function archive(Parametrage $parametrage, $em, $action)
-    {
-        $archive = new ArchiveParam();
-        $pdf = new ArchivePdf();
-
-        $archive->setIdParam($parametrage->getId());
-        $archive->setContrat($parametrage->getContrat());
-        $archive->setLibelle($parametrage->getLibelle());
-        $archive->setType($parametrage->getType());
-
-        $pdf->setTitle($parametrage->getPdfSource()->getTitle());
-        $pdf->setFile($parametrage->getPdfSource()->getFile());
-        $archive->setPdf($pdf);
-        $archive->setPartenaires($parametrage->getPartenaires());
-        $archive->setCollectivites($parametrage->getCollectivites());
-        $archive->setOrdre($parametrage->getOrdre());
-        $archive->setReference($parametrage->getReference());
-        $archive->setAction($action);
-        $archive->setCreatedAt(new DateTime());
-        $em->persist($archive);
-    }*/
 }

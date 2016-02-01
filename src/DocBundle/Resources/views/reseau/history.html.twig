@@ -1,41 +1,55 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
 
 {% block body %}
-    {% if versions is empty %}
-        <h3><i class="glyphicon glyphicon-th-list"></i> Aucun historique pour le réseau {{ reseau.name }}.
-        </h3>
-    {% else %}
-        <h3><i class="glyphicon glyphicon-th-list"></i> L'historiques du réseau {{ reseau.name }}.
-        </h3>
-        <hr>
+<div class="row">
+    <div class="col-sm-12">
+        <div class = "panel panel-success">
+            {% if versions is empty %}
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> Aucun historique pour le réseau {{ reseau.name }}.
+                    </h3>
+                </div>
+                <div class = "panel-body">
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                <tr>
-                    <th>Numéro</th>
-                    <th>Date de création</th>
-                    <th>Date de génération</th>
-                    <th>Utilisateur</th>
-                    <th>Commentaire</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for version in versions %}
-                    <tr class='clickable-row' data-href="{{ path('version_history_params', {'id': version.id}) }}" style="cursor:pointer;">
-                        <td>{{ version.numero }}</td>
-                        <td>{{ version.createdAt |date("d/m/Y à H:i:s") }}</td>
-                        <td>{{ version.updatedAt |date("d/m/Y à H:i:s") }}</td>
-                        <td>{{ version.user }}</td>
-                        <td>{{ version.message }}</td>
-                    </tr>
+                </div>
+            {% else %}
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> L'historiques du réseau {{ reseau.name }}.
+                    </h3>
+                </div>
+                <div class = "panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                            <tr>
+                                <th>Numéro</th>
+                                <th>Date de création</th>
+                                <th>Date de génération</th>
+                                <th>Utilisateur</th>
+                                <th>Commentaire</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for version in versions %}
+                                <tr class='clickable-row' data-href="{{ path('version_history_params', {'id': version.id}) }}" style="cursor:pointer;">
+                                    <td><a href="{{ path('version_history_params', {'id': version.id}) }}">Version {{ version.numero }}</a></td>
+                                    <td>{{ version.createdAt |date("d/m/Y à H:i:s") }}</td>
+                                    <td>{{ version.updatedAt |date("d/m/Y à H:i:s") }}</td>
+                                    <td>{{ version.user }}</td>
+                                    <td>{{ version.message }}</td>
+                                </tr>
 
-                {% endfor %}
-                </tbody>
-            </table>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-
-    {% endif %}
+    </div>
+</div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
