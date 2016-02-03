@@ -229,7 +229,7 @@ class ReseauController extends Controller
             $range = 20;
             $fs = new Filesystem();
             if ($fs->exists($reseauParamsDir)) {
-                //$fs->remove($reseauParamsDir);
+                $fs->remove($reseauParamsDir);
             }
             while ($block < count($parametrages)) {
                 $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $block, $range);
@@ -270,7 +270,12 @@ class ReseauController extends Controller
                 $block = $block + 1;
             }
             ini_set('max_execution_time', 60);
-            return $this->redirectToRoute('reseau_show_parametrage', ['id' => $reseau->getId()]);
+            return $this->redirectToRoute('reseau_show_parametrage',
+                array(
+                    'id' => $reseau->getId(),
+                    'confirmation' => true
+                )
+            );
         }
 
         return new JsonResponse(array(

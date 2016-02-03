@@ -97,3 +97,27 @@ footer {
     color: white;
 
 }
+
+
+.editing {
+    background-color: #F0AD4E;
+}
+.panel-success > .panel-heading {
+    background-image: none;
+    background-color: #00857E;
+    color: white;
+
+}
+.panel-primary > .panel-heading {
+    background-image: none;
+    background-color: #002364;
+    color: white;
+
+}
+/* limit the collectivite column width in the list */
+.collectivites {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

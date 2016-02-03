@@ -20,8 +20,12 @@ function synchroneRequest (formName) {
     });
 }
 
+
 function supprimer(url) {
-    if(confirm('Confirmez vous la suppression?')) {
+    $('#confirm-delete .modal-body').html('Confirmez-vous la suppression ?');
+    $('#confirm-delete').modal('show');
+    $('.btn-ok-dialog').click(function(){
+        $('#confirm-delete').modal('hide');
         $.getJSON(url, function (data) {
             if (data.status == 'deleted') {
                 $('#param_'+data.id).remove();
@@ -31,15 +35,18 @@ function supprimer(url) {
             $('#param_'+data.id+' .deleting').removeClass('hide');
             $('#param_'+data.id+' .not-deleting').addClass('hide');
         });
-    };
+    });
 }
 
 function annuler(url) {
-    if(confirm('Confirmez l\'annulation de la suppression?')) {
+    $('#confirm-delete .modal-body').html('Confirmez-vous cette annulation?');
+    $('#confirm-delete').modal('show');
+    $('.btn-ok-dialog').click(function(){
+        $('#confirm-delete').modal('hide');
         $.getJSON(url, function (data) {
             $('#param_'+data.id).removeClass('danger');
             $('#param_'+data.id+' .not-deleting').removeClass('hide');
             $('#param_'+data.id+' .deleting').addClass('hide');
         });
-    };
+    });
 }

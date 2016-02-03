@@ -1,29 +1,6 @@
 {% extends 'DocBundle:Default:index.html.twig' %}
 {% block stylesheets %}
     {{ parent() }}
-    <style type="text/css">
-        .editing {
-            background-color: #F0AD4E;
-        }
-        .panel-success > .panel-heading {
-            background-image: none;
-            background-color: #00857E;
-            color: white;
-
-        }
-        .panel-primary > .panel-heading {
-            background-image: none;
-            background-color: #002364;
-            color: white;
-
-        }
-        .collectivites {
-            max-width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
@@ -39,6 +16,11 @@
                         </h3>
                     </div>
                     <div class = "panel-body">
+                        {% if app.request.get('confirmation')  %}
+                            <div class="alert alert-success">
+                                <strong>Success:</strong> Génération des paramétrages terminée.
+                            </div>
+                        {% endif %}
                         <table class="table table-striped table-condensed responsive no-wrap table-bordered" id="source">
                             <thead>
                             <tr>
@@ -122,14 +104,16 @@
                         </ul>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-primary {{ version.enCours ? '' : 'disabled' }}" {{ version.enCours ? 'data-toggle="modal" data-target="#myModal"' : '' }}>
-                            <i class="glyphicon glyphicon-cog"></i> Générer
-                        </button>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <button type="button" class="btn btn-primary {{ version.enCours ? '' : 'disabled' }}" {{ version.enCours ? 'data-toggle="modal" data-target="#myModal"' : '' }}>
+                                <i class="glyphicon glyphicon-cog"></i> Générer
+                            </button>
                         {{ form_start(exportForm, {'attr': {'class': 'form-inline pull-right', 'id': 'generateForm', 'style':'display:inline-block'}}) }}
                         <button type="submit" class="btn btn-info inline">
                             <i class="glyphicon glyphicon-download"></i> Exporter en CSV
                         </button>
                         {{ form_end(exportForm) }}
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class = "panel-heading">
@@ -154,28 +138,32 @@
                 </div>
                 {{ form_start(form, {'attr': {'id': 'generateForm', 'class': 'form-horizontal'}}) }}
                 <div class="modal-body">
-                    <!--<p id="requestStatus">Génération en cours.</p>
-                        {% image '@DocBundle/Resources/public/images/default.svg' %}
-                        <img src="{{ asset_url }}" alt="loader" />
-                        {% endimage %}-->
-                    <div class="form-group">
-                        {{ form_label(form.numero, "N° Version", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
-                        {{ form_errors(form.numero) }}
-                        <div class="col-sm-4">
-                            {{ form_widget(form.numero, {'attr': {'class': 'form-control checkbox-all', 'required':'required'}}) }}
+                    <div class="loading hide">
+                        <p id="requestStatus">Génération en cours...</p>
+                        <div class="spinner">
+                            <div class="dot1"></div>
+                            <div class="dot2"></div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        {{ form_label(form.message, "Description", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
-                        {{ form_errors(form.message) }}
-                        <div class="col-sm-4">
-                            {{ form_widget(form.message, {'attr': {'class': 'form-control', 'required':'required'}}) }}
+                    <div class="load-form">
+                        <div class="form-group">
+                            {{ form_label(form.numero, "N° Version", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
+                            {{ form_errors(form.numero) }}
+                            <div class="col-sm-4">
+                                {{ form_widget(form.numero, {'attr': {'class': 'form-control checkbox-all', 'required':'required'}}) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.message, "Description", {'label_attr': {'class': 'col-sm-3 control-label'}}) }}
+                            {{ form_errors(form.message) }}
+                            <div class="col-sm-4">
+                                {{ form_widget(form.message, {'attr': {'class': 'form-control', 'required':'required'}}) }}
+                            </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Générer</button>
+                    <span class="load-form"><button type="submit" class="btn btn-primary load-form-button">Générer</button></span>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
                 </div>
                 {{ form_end(form) }}
@@ -184,11 +172,41 @@
         </div>
     </div>
 
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        Confirmation
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    Confirmez-vous cette opération ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Non</button>
+                    <a class="btn btn-danger btn-ok-dialog">Oui</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="application/javascript">
+    <script>
+        function pression(url) {
+            $('#confirm-delete').modal('show');
+            $('.btn-ok').click(function(){
+                alert(url);
+            });
+        }
+
+
+        $('.load-form-button').click(function(){
+            $('.loading').removeClass('hide');
+            $('.load-form').addClass('hide');
+        });
         $(document).ready(function() {
             //synchroneRequest('#generateForm');
         });

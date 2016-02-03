@@ -39,7 +39,7 @@ class ParametrageType extends AbstractType
             ->add('collectivites')
             ->add('contrat')
             ->add('libelle')
-            ->add('ordre', IntegerType::class)
+            ->add('ordre')
             ->add('type')
             ->add('reference')
            /* ->add('commentaire')
