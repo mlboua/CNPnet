@@ -24,6 +24,25 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect('res')
             ->addSelect('pdf')
             ->where('res.id = :id')
+            ->andWhere('pdf.current = :current')
+            ->setParameter('current', 1)
+            ->setParameter('id', $reseauId)
+            ->orderBy('p.ordre', 'ASC');
+        $qb->setFirstResult(($page-1) * $maxPerPage)
+            ->setMaxResults($maxPerPage);
+        return new Paginator($qb, true);
+    }
+
+    /**
+     * @param $reseauId
+     * @return array
+     */
+    public function getParametrageByReseauNoPdf($reseauId, $page = 1, $maxPerPage=20)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->join('p.reseau', 'res')
+            ->addSelect('res')
+            ->where('res.id = :id')
             ->setParameter('id', $reseauId)
             ->orderBy('p.ordre', 'ASC');
         $qb->setFirstResult(($page-1) * $maxPerPage)
@@ -38,9 +57,9 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('p');
         $qb->join('p.reseau', 'res')
-            ->join('p.pdfSources', 'pdf')
+            //->join('p.pdfSources', 'pdf')
             ->addSelect('res')
-            ->addSelect('pdf')
+            //->addSelect('pdf')
             ->orderBy('p.ordre', 'ASC');
         $qb->setFirstResult(($page-1) * $maxPerPage)
             ->setMaxResults($maxPerPage);

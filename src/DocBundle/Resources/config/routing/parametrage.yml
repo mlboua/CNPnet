@@ -13,11 +13,6 @@ parametrage_show_pdf:
     defaults: { _controller: "DocBundle:Parametrage:showPdf" }
     methods:  GET
 
-parametrage_show_archive_pdf:
-    path:     /{id}/archivepdf
-    defaults: { _controller: "DocBundle:Parametrage:showArchivePdf" }
-    methods:  GET
-
 parametrage_new:
     path:     /new
     defaults: { _controller: "DocBundle:Parametrage:new" }

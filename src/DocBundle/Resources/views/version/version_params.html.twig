@@ -5,93 +5,92 @@
 
 {% block body %}
 <div class="row">
-    <div class="col-sm-12">
-        <div class = "panel panel-success">
-            {% if  parametrages is empty %}
-                <div class = "panel-heading">
-                    <h3 class = "panel-title">
-                        <i class="glyphicon glyphicon-th-list"></i> Aucun paramétrage n'a été archivé pour le réseau {{ reseau.name }}
-                    </h3>
-                </div>
-                <div class = "panel-body">
-                </div>
-            {% else %}
-                <div class = "panel-heading">
-                    <h3 class = "panel-title">
-                        <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }} (historique)
-                        <span class="label label-default">V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
+    <div class = "panel panel-success">
+        {% if  parametrages is empty %}
+            <div class = "panel-heading">
+                <h3 class = "panel-title">
+                    <i class="glyphicon glyphicon-th-list"></i> Aucun paramétrage n'a été archivé pour le réseau {{ reseau.name }}
+                </h3>
+            </div>
+            <div class = "panel-body">
+            </div>
+        {% else %}
+            <div class = "panel-heading">
+                <h3 class = "panel-title">
+                    <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }} (historique)
+                    <span class="label label-default">V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
 
-                        <button type="button" class="btn btn-warning pull-right patch-button">Patcher</button>
-                    </h3>
-                </div>
-                <div class = "panel-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="label-warning hide patch">
-                                <h4><strong>Attentioin :</strong>Ces changements ne seront pas reportés dans le paramétrage en cours du réseau.</h4>
-                            </div>
+                    <button type="button" class="btn btn-warning pull-right patch-button">Patcher</button>
+                </h3>
+            </div>
+            <div class = "panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="label-warning hide patch">
+                            <h4><strong>Attentioin :</strong>Ces changements ne seront pas reportés dans le paramétrage en cours du réseau.</h4>
                         </div>
                     </div>
+                </div>
 
-                    <table class="table table-striped table-condensed responsive no-wrap table-bordered table-hover" id="source">
-                        <thead>
+                <table class="table table-striped table-condensed responsive no-wrap table-bordered table-hover" id="source">
+                    <thead>
+                    <tr>
+                        <th>Partenaires</th>
+                        <th>Collectivites</th>
+                        <th>Contrat</th>
+                        <th>Libelle</th>
+                        <th>Ordre</th>
+                        <th>Type</th>
+                        <th>Reference</th>
+                        <th>Pdf</th>
+                        <th class="hide patch">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for parametrage in parametrages %}
                         <tr>
-                            <th>Partenaires</th>
-                            <th>Collectivites</th>
-                            <th>Contrat</th>
-                            <th>Libelle</th>
-                            <th>Ordre</th>
-                            <th>Type</th>
-                            <th>Reference</th>
-                            <th>Pdf</th>
-                            <th class="hide patch">Actions</th>
+                            <td>
+                                {{ parametrage.partenaires }}
+                            </td>
+                            <td>{{ parametrage.collectivites }}</td>
+                            <td>{{ parametrage.contrat }}</td>
+                            <td>{{ parametrage.libelle }}</td>
+                            <td>{{ parametrage.ordre }}</td>
+                            <td>{{ parametrage.type }}</td>
+                            <td>{{ parametrage.reference }}</td>
+                            <td><a href="{{ path('parametrage_show_archive_pdf', { 'id': parametrage.id }) }}">Voir le pdf</a></td>
+                            <td class="hide patch">
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
+                                            <span class="glyphicon glyphicon-remove">Supprimer</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
+                                            <span class="glyphicon glyphicon-pencil">Modifier</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {% for parametrage in parametrages %}
-                            <tr>
-                                <td>
-                                    {{ parametrage.partenaires }}
-                                </td>
-                                <td>{{ parametrage.collectivites }}</td>
-                                <td>{{ parametrage.contrat }}</td>
-                                <td>{{ parametrage.libelle }}</td>
-                                <td>{{ parametrage.ordre }}</td>
-                                <td>{{ parametrage.type }}</td>
-                                <td>{{ parametrage.reference }}</td>
-                                <td><a href="{{ path('parametrage_show_archive_pdf', { 'id': parametrage.id }) }}">{{ parametrage.pdfSource.title }}</a></td>
-                                <td class="hide patch">
-                                    <ul>
-                                        <li>
-                                            <a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">
-                                                <span class="glyphicon glyphicon-remove">Supprimer</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ path('parametrage_edit', { 'id': parametrage.id }) }}">
-                                                <span class="glyphicon glyphicon-pencil">Modifier</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="panel-footer">
-                    <button type="button" class="btn btn-primary inline" data-toggle="modal" data-target="#myModal">
-                        <i class="glyphicon glyphicon-cog"></i> Générer
-                    </button>
-                    {{ form_start(exportForm, {'attr': {'class': 'form-inline pull-right', 'id': 'generateForm', 'style':'display:inline-block'}}) }}
-                    <button type="submit" class="btn btn-info inline">
-                        <i class="glyphicon glyphicon-download"></i> Exporter en CSV
-                    </button>
-                    {{ form_end(exportForm) }}
-                </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <button type="button" class="btn btn-primary inline" data-toggle="modal" data-target="#myModal">
+                    <i class="glyphicon glyphicon-cog"></i> Générer
+                </button>
+                {{ form_start(exportForm, {'attr': {'class': 'form-inline pull-right', 'id': 'generateForm', 'style':'display:inline-block'}}) }}
+                <button type="submit" class="btn btn-info inline">
+                    <i class="glyphicon glyphicon-download"></i> Exporter en CSV
+                </button>
+                {{ form_end(exportForm) }}
             </div>
         </div>
-    </div>
+
+</div>
 
             {% endif %}
     <div class="modal fade" id="myModal" role="dialog" >

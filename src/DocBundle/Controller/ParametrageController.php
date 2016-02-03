@@ -6,14 +6,11 @@ use DateTime;
 use DocBundle\Entity\ArchiveParam;
 use DocBundle\Entity\ArchivePdf;
 use DocBundle\Entity\Pdf;
-use DocBundle\Entity\Reseau;
 use DocBundle\Entity\Version;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\File\File;
 
 use DocBundle\Entity\Parametrage;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,7 +29,8 @@ class ParametrageController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $maxPerPage=50;
-        $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages();
+        $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages($page, $maxPerPage);
+        $maxPerPage = ceil(count($parametrages)/$maxPerPage);
         if ($page > $maxPerPage) {
             throw $this->createNotFoundException("La page ".$page." n'existe pas.");
         }
@@ -55,6 +53,7 @@ class ParametrageController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $pdf = new Pdf();
+            $pdf->setCurrent(1);
             $pdf->setTitle($parametrage->generateFileName('.pdf'));
             $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
             $pdf->SetFile(stream_get_contents($stream));
@@ -108,17 +107,6 @@ class ParametrageController extends Controller
     }
 
     /**
-     * Finds and displays a Archive associated pdf document.
-     *
-     */
-    public function showArchivePdfAction(ArchiveParam $parametrage)
-    {
-        $pdfFile = $parametrage->getPdfSource()->getFile();
-        $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
-        return $response;
-    }
-
-    /**
      * Displays a form to edit an existing Parametrage entity.
      *
      */
@@ -140,7 +128,9 @@ class ParametrageController extends Controller
                 $parametrage->getReseau()->addVersion($version);
 
                 $archive = new ArchiveParam();
-                $archive->setPdfSource($parametrage->getLastPdfSource());
+                $pdf = $parametrage->getLastPdfSource();
+                //$pdf->setCurrent(0);
+                $archive->setPdfSource($pdf);
                 $archive->setParametrage($parametrage);
                 $archive->setAction("Modification");
 
@@ -203,7 +193,8 @@ class ParametrageController extends Controller
                 $em->flush();
                 return new JsonResponse(array(
                     'id' => $id,
-                    'status' => 'deleted'
+                    'status' => 'deleted',
+                    'version' => $version->getNumero()
                 ));
             }
             $parametrage->setDeleting(1);
@@ -268,7 +259,7 @@ class ParametrageController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            ini_set('max_execution_time', 0);
             // TODO: Change source pdf file path
             // TODO: Change pdf file names column in the CSV file
             $pdfDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/pdf';
@@ -280,6 +271,7 @@ class ParametrageController extends Controller
                 $stream = fopen($pdfDir.'/'.$row['contrat'].'/'.$row['pdf_source'], 'rb');
                 $param = new Parametrage();
                 $pdfSource = new Pdf();
+                $pdfSource->setCurrent(1);
                 $reseau = $em->getRepository('DocBundle:Reseau')->findOneByCode($row['reseaux']);
                 if (null === $reseau) {
                     throw $this->createNotFoundException("Le réseau ".$row['reseaux']." n'existe pas.");
@@ -303,7 +295,7 @@ class ParametrageController extends Controller
             $em->flush();
             return $this->redirectToRoute('parametrage_index');
         }
-
+        ini_set('max_execution_time', 60);
         return $this->render('DocBundle:parametrage:csv_form.html.twig', array(
             'form' => $form->createView(),
         ));

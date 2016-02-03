@@ -129,6 +129,17 @@ class VersionController extends Controller
     }
 
     /**
+     * Finds and displays a Archive associated pdf document.
+     *
+     */
+    public function showArchivePdfAction(ArchiveParam $parametrage)
+    {
+        $pdfFile = $parametrage->getPdfSource()->getFile();
+        $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
+        return $response;
+    }
+
+    /**
      * Create an download csv file from table content.
      * @param Request $request
      * @param Version $version

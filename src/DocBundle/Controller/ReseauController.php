@@ -178,18 +178,18 @@ class ReseauController extends Controller
         /*if ($page < 1) {
             throw $this->createNotFoundException("La page ".$page." n'existe pas.");
         }*/
-        $maxPerPage=50;
+        $maxPerPage=25;
 
         $version = $reseau->getVersions()->last();
         $form = $this->createForm('DocBundle\Form\VersionType',
-                                    $version,
-                                    array('action' => $this->generateUrl('reseau_generate_params', ['id' => $reseau->getId()]
-                                    ))
+            $version,
+            array('action' => $this->generateUrl('reseau_generate_params', ['id' => $reseau->getId()]
+            ))
         );
 
         $exportForm = $this->createReseauForm($reseau, 'reseau_export_params', 'POST');
         $em = $this->getDoctrine()->getManager();
-        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $page, $maxPerPage);
+        $parametrage = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseauNoPdf($reseau->getId(), $page, $maxPerPage);
         $maxPerPage = ceil(count($parametrage)/$maxPerPage);
 
         /*if ($page > $maxPerPage) {
@@ -214,6 +214,7 @@ class ReseauController extends Controller
      */
     public function generateParamsAction(Request $request, Reseau $reseau, Version $version)
     {
+        ini_set('max_execution_time', 0);
         $version = $reseau->getVersions()->last();
         $form = $this->createForm('DocBundle\Form\VersionType', $version);
         $form->handleRequest($request);
@@ -223,43 +224,52 @@ class ReseauController extends Controller
             $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../generations/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
 
-
             $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
+            $block = 1;
+            $range = 20;
             $fs = new Filesystem();
             if ($fs->exists($reseauParamsDir)) {
-                $fs->remove($reseauParamsDir);
+                //$fs->remove($reseauParamsDir);
             }
-            foreach ($parametrages as $param) {
-                try {
-                    $contratDir = $reseauParamsDir .'/'. $param->getContrat();
-                    //$fs->remove($contratDir);
-                    $fs->mkdir($contratDir);
-                    file_put_contents(
-                        $contratDir .'/'. $param->getLastPdfSource()->getTitle(),
-                        $param->getLastPdfSource()->getFile()
-                    );
-                    //$this->generateCollectiviteFile($param, $version->getNumero(), $version->getMessage(), $contratDir .'/'. $param->generateFileName('.collectivites'));
-                    $this->generateCollectiviteFile($param, $version->getNumero(),
-                        $version->getMessage(),
-                        $contratDir .'/'. str_replace('.pdf', '.collectivites', $param->getLastPdfSource()->getTitle())
-                    );
-                } catch (IOException $e) {
-                    echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
+            while ($block < count($parametrages)) {
+                $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $block, $range);
+
+                foreach ($parametrages as $param) {
+                    try {
+                        $contratDir = $reseauParamsDir .'/'. $param->getContrat();
+                        $fs->mkdir($contratDir);
+                        file_put_contents(
+                            $contratDir .'/'. $param->getLastPdfSource()->getTitle(),
+                            $param->getLastPdfSource()->getFile()
+                        );
+                        $this->generateCollectiviteFile($param, $version->getNumero(),
+                            $version->getMessage(),
+                            $contratDir .'/'. str_replace('.pdf', '.collectivites', $param->getLastPdfSource()->getTitle())
+                        );
+                    } catch (IOException $e) {
+                        echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
+                    }
+
+                    $archive = new ArchiveParam();
+                    $pdf = $param->getLastPdfSource();
+                    $pdf->setCurrent(0);
+                    $archive->setPdfSource($pdf);
+                    $archive->setParametrage($param);
+                    $archive->setAction("Génération");
+
+                    $version->addArchive($archive);
+                    $archive->setVersioin($version);
+
+                    $version->setEncours('0');
+                    $reseau->addVersion($version);
+                    $em->persist($reseau);
+                    $em->flush();
+                    $archive = null;
                 }
 
-                $archive = new ArchiveParam();
-                $archive->setPdfSource($param->getLastPdfSource());
-                $archive->setParametrage($param);
-                $archive->setAction("Génération");
-
-                $version->addArchive($archive);
-                $archive->setVersioin($version);
+                $block = $block + 1;
             }
-            $version->setEncours('0');
-            $reseau->addVersion($version);
-            $em->persist($reseau);
-            $em->flush();
-
+            ini_set('max_execution_time', 60);
             return $this->redirectToRoute('reseau_show_parametrage', ['id' => $reseau->getId()]);
         }
 

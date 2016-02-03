@@ -17,6 +17,12 @@
             color: white;
 
         }
+        .collectivites {
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     </style>
 {% endblock %}
 
@@ -29,7 +35,7 @@
                     <div class = "panel-heading">
                         <h3 class = "panel-title">
                             <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }}
-                             <span class="label label-danger"> V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
+                             <span class="label label-danger" id="version"> V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
                         </h3>
                     </div>
                     <div class = "panel-body">
@@ -50,17 +56,16 @@
                             <tbody>
                             {% for parametrage in parametrages %}
                                 <tr class="{{ parametrage.deleting ? 'danger' : '' }}" id="param_{{ parametrage.id }}">
-                                    <!--<td><a href="{{ path('parametrage_show', { 'id': parametrage.id }) }}">{{ parametrage.id }}</a></td>-->
                                     <td>
                                         {{ parametrage.partenaires }}
                                     </td>
-                                    <td>{{ parametrage.collectivites }}</td>
+                                    <td class="collectivites">{{ parametrage.collectivites }}</td>
                                     <td>{{ parametrage.contrat }}</td>
                                     <td>{{ parametrage.libelle }}</td>
                                     <td>{{ parametrage.ordre }}</td>
                                     <td>{{ parametrage.type }}</td>
                                     <td>{{ parametrage.reference }}</td>
-                                    <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">{{ parametrage.lastPdfSource.title }}</a></td>
+                                    <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">Voir le pdf</a></td>
                                     <td>
                                         {% if parametrage.deleting %}
                                             <div class="deleting">

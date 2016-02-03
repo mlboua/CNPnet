@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 /**
  * Pdf
  *
- * @ORM\Table(name="pdf")
+ * @ORM\Table(name="pdf", indexes={@ORM\Index(name="current_pdf_idx", columns={"current"})})
  * @ORM\Entity(repositoryClass="DocBundle\Repository\PdfRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -30,6 +30,13 @@ class Pdf
      * @ORM\Column(name="title", type="string", length=255, nullable=true)
      */
     private $title;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="current", type="boolean", nullable=true)
+     */
+    private $current;
 
     /**
      * @var BlobType
@@ -176,5 +183,29 @@ class Pdf
     public function getArchives()
     {
         return $this->archives;
+    }
+
+    /**
+     * Set current
+     *
+     * @param boolean $current
+     *
+     * @return Pdf
+     */
+    public function setCurrent($current)
+    {
+        $this->current = $current;
+
+        return $this;
+    }
+
+    /**
+     * Get current
+     *
+     * @return boolean
+     */
+    public function getCurrent()
+    {
+        return $this->current;
     }
 }

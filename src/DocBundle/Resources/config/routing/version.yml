@@ -17,3 +17,8 @@ version_export_params:
     path:     /{id}/export
     defaults: { _controller: "DocBundle:Version:exportHarchiveParams" }
     methods:  POST
+
+parametrage_show_archive_pdf:
+    path:     /{id}/archivepdf
+    defaults: { _controller: "DocBundle:Version:showArchivePdf" }
+    methods:  GET
