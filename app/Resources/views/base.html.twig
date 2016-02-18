@@ -54,7 +54,7 @@
         <!-- /Header -->
 
         <div class="container">
-
+            {% if is_granted('ROLE_USER') %}
             <div class="row menu">
                 <div class="col-sm-2">
                     <div class = "panel panel-primary">
@@ -109,6 +109,7 @@
                     </div>
                     <hr>
                 </div>
+                {% endif %}
                 <div class="col-sm-10">
                     {% block body %}
 
@@ -116,6 +117,7 @@
                 </div>
 
             </div>
+
 
         </div><!--/container-->
 

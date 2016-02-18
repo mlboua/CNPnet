@@ -32,7 +32,9 @@
                                 <th>Type</th>
                                 <th>Reference</th>
                                 <th>Pdf</th>
-                                <th>Actions</th>
+                                {% if is_granted('ROLE_AGENT') %}
+                                    <th>Actions</th>
+                                {% endif %}
                             </tr>
                             </thead>
                             <tbody>
@@ -48,6 +50,7 @@
                                     <td>{{ parametrage.type }}</td>
                                     <td>{{ parametrage.reference }}</td>
                                     <td><a href="{{ path('parametrage_show_pdf', { 'id': parametrage.id }) }}">Voir le pdf</a></td>
+                                    {% if is_granted('ROLE_AGENT') %}
                                     <td>
                                         {% if parametrage.deleting %}
                                             <div class="deleting">
@@ -91,6 +94,7 @@
                                             </div>
                                         {% endif %}
                                     </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -104,7 +108,7 @@
                         </ul>
                     </div>
                     <div class="panel-footer">
-                        {% if is_granted('ROLE_ADMIN') %}
+                        {% if is_granted('ROLE_AGENT') %}
                             <button type="button" class="btn btn-primary {{ version.enCours ? '' : 'disabled' }}" {{ version.enCours ? 'data-toggle="modal" data-target="#myModal"' : '' }}>
                                 <i class="glyphicon glyphicon-cog"></i> Générer
                             </button>

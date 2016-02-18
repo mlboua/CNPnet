@@ -17,6 +17,8 @@
                 Cette interface vous permet de consulter, modifier, et générer le paramétrage des documents
                 statiques pour l’ensemble des partenaires de CNP Assurances s’inscrivant dans l’application CNPnet.
 
+                <hr>
+
                 <div class="panel panel-default">
                     <div class="panel-heading"> <strong class="">Connexion</strong>
                         {% if error %}
@@ -52,7 +54,7 @@
                             <div class="form-group last">
                                 <div class="col-sm-offset-3 col-sm-9">
                                     <input type="submit" class="btn btn-success btn-sm" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
-                                    <button type="reset" class="btn btn-default btn-sm">Reset</button>
+                                    <button type="reset" class="btn btn-default btn-sm">Annuler</button>
                                 </div>
                             </div>
                             <input type="hidden" name="_target_path" value="doc_homepage" />
@@ -60,11 +62,18 @@
                     </div>
                 </div>
             </div>
+            <vr></vr>
             <div class="col-sm-4">
                 <span class="">
                     Si vous n'avez pas de compte utilisateur, vous devez demandeer la création à l'administrateur.
                     <hr>
-                    Vous pouvez également consulter le paramétrage en connectant avec le compte <a href="">invité.</a>
+                    Vous pouvez également consulter le paramétrage en connectant avec le compte
+                    <form action="{{ path("fos_user_security_check") }}" method="post">
+                        <input type="text" id="username" name="_username" value="invite" class="hide"/>
+                        <input type="password" name="_password" value="invite" class="hide" />
+                        <input type="hidden" name="_target_path" value="doc_homepage" />
+                        <button class="btn btn-primary" type="submit">Invité</button>
+                   </form>
                 </span>
             </div>
         </div>

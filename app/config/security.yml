@@ -5,8 +5,10 @@ security:
         UserBundle\Entity\User: sha512
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_INVITE:      ROLE_USER
+        ROLE_AGENT:       ROLE_INVITE
+        ROLE_ADMIN:       [ROLE_USER, ROLE_INVITE]
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_INVITE, ROLE_ADMIN]
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:

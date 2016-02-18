@@ -20,7 +20,9 @@
                     <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }} (historique)
                     <span class="label label-default">V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
 
-                    <button type="button" class="btn btn-warning pull-right patch-button">Patcher</button>
+                    {% if is_granted('ROLE_AGENT') %}
+                    <!--<button type="button" class="btn btn-warning pull-right patch-button">Patcher</button>-->
+                    {% endif %}
                 </h3>
             </div>
             <div class = "panel-body">
@@ -40,7 +42,9 @@
                         <th>Type</th>
                         <th>Reference</th>
                         <th>Pdf</th>
+                        {% if is_granted('ROLE_AGENT') %}
                         <th class="hide patch">Actions</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -56,6 +60,7 @@
                             <td>{{ parametrage.type }}</td>
                             <td>{{ parametrage.reference }}</td>
                             <td><a href="{{ path('parametrage_show_archive_pdf', { 'id': parametrage.id }) }}">Voir le pdf</a></td>
+                            {% if is_granted('ROLE_AGENT') %}
                             <td class="hide patch">
                                 <ul>
                                     <li>
@@ -70,6 +75,7 @@
                                     </li>
                                 </ul>
                             </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -82,6 +88,7 @@
                     {% endfor %}
                 </ul>
             </div>
+        {% if is_granted('ROLE_AGENT') %}
             <div class="panel-footer">
                 <button type="button" class="btn btn-primary inline" data-toggle="modal" data-target="#myModal">
                     <i class="glyphicon glyphicon-cog"></i> Générer
@@ -92,6 +99,7 @@
                 </button>
                 {{ form_end(exportForm) }}
             </div>
+        {% endif %}
         </div>
 
 </div>
