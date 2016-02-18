@@ -91,7 +91,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <ul class="pagination">
+                    <ul class="pagination pull-right btn-group">
                         {% for p in range(1, maxPerPage) %}
                             <li{% if p == page %} class="active"{% endif %}>
                                 <a href="{{ path('parametrage_index', {'page': p}) }}">{{ p }}</a>

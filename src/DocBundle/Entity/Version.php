@@ -3,6 +3,7 @@
 namespace DocBundle\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -62,7 +63,7 @@ class Version
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="DocBundle\Entity\ArchiveParam", cascade={"persist", "remove"}, mappedBy="version")
+     * @ORM\ManyToMany(targetEntity="DocBundle\Entity\ArchiveParam", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $archives;
@@ -216,7 +217,7 @@ class Version
      */
     public function __construct()
     {
-        $this->archives = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->archives = new ArrayCollection();
     }
 
     /**
@@ -230,6 +231,21 @@ class Version
     {
         $this->archives[] = $archive;
 
+        return $this;
+    }
+
+    /**
+     * Replace current arcihves with a new archives collection
+     *
+     * @param ArrayCollection $archives
+     * @return $this
+     */
+    public function addGroupArchives($archives)
+    {
+        foreach ($archives as $elt) {
+            $this->addArchive($elt);
+            $elt->addVersion($this);
+        }
         return $this;
     }
 

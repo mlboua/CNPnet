@@ -35,27 +35,41 @@ class VersionController extends Controller
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+            ini_set('max_execution_time', 0);
             $version->setUser($this->getUser()->getUsername());
-            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/'.$reseau->getCode();
+            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../generations/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
 
             $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version);
-
+            $block = 1;
+            $range = 20;
             $fs = new Filesystem();
-            $fs->remove($reseauParamsDir);
-            foreach ($parametrages as $param) {
-                try {
-                    $contratDir = $reseauParamsDir .'/'. $param->getContrat();
-                    $fs->mkdir($contratDir);
-                    file_put_contents(
-                        $contratDir .'/'. $param->getPdfSource()->getTitle(),
-                        $param->getPdfSource()->getFile()
-                    );
-                    $this->generateCollectiviteFile($param, $version->getNumero(), $version->getMessage(), $contratDir .'/'. $param->generateFileName('.collectivites'));
-                } catch (IOException $e) {
-                    echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
-                }
+            if ($fs->exists($reseauParamsDir)) {
+                //$fs->remove($reseauParamsDir);
             }
+            while ($block < count($parametrages)) {
+                $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version, $block, $range);
+                foreach ($parametrages as $param) {
+                    try {
+                        $contratDir = $reseauParamsDir .'/'. $param->getContrat();
+                        $fs->mkdir($contratDir);
+                        file_put_contents(
+                            $contratDir .'/'. $param->getLastPdfSource()->getTitle(),
+                            $param->getLastPdfSource()->getFile()
+                        );
+                        $this->generateCollectiviteFile($param, $version->getNumero(),
+                            $version->getMessage(),
+                            $contratDir .'/'. str_replace('.pdf', '.collectivites', $param->getLastPdfSource()->getTitle())
+                        );
+                    } catch (IOException $e) {
+                        echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
+                    }
+                }
+                $block = $block + 1;
+            }
+            $em->persist($version);
+            $em->flush();
+            ini_set('max_execution_time', 60);
             return $this->redirectToRoute('reseau_show_parametrage', ['id' => $reseau->getId()]);
         }
 
@@ -107,7 +121,7 @@ class VersionController extends Controller
      * @param Version $version
      * @return Response
      */
-    public function versionHistoryAction(Version $version)
+    public function versionHistoryAction(Version $version, $page)
     {
         $reseau = $version->getReseau();
         $form = $this->createForm('DocBundle\Form\VersionType',
@@ -117,14 +131,21 @@ class VersionController extends Controller
         );
         $exportForm = $this->createVersionForm($version, 'version_export_params', 'POST');
         $em = $this->getDoctrine()->getManager();
-        $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version);
+        $maxPerPage=30;
+        $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version, $page, $maxPerPage);
+        $maxPerPage = ceil(count($parametrages)/$maxPerPage);
+        if ($page > $maxPerPage) {
+            //throw $this->createNotFoundException("La page ".$page." n'existe pas.");
+        }
 
         return $this->render('DocBundle:version:version_params.html.twig', array(
             'parametrages' => $parametrages,
             'reseau' => $reseau,
             'version' => $version,
             'form' => $form->createView(),
-            'exportForm' => $exportForm->createView()
+            'exportForm' => $exportForm->createView(),
+            'maxPerPage' => $maxPerPage,
+            'page' => $page,
         ));
     }
 
@@ -134,7 +155,7 @@ class VersionController extends Controller
      */
     public function showArchivePdfAction(ArchiveParam $parametrage)
     {
-        $pdfFile = $parametrage->getPdfSource()->getFile();
+        $pdfFile = $parametrage->getLastPdfSource()->getFile();
         $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
         return $response;
     }

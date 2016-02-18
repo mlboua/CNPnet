@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>ArchiveParam</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ archiveParam.id }}</td>
+            </tr>
+            <tr>
+                <th>Idparam</th>
+                <td>{{ archiveParam.idParam }}</td>
+            </tr>
+            <tr>
+                <th>Partenaires</th>
+                <td>{{ archiveParam.partenaires }}</td>
+            </tr>
+            <tr>
+                <th>Collectivites</th>
+                <td>{{ archiveParam.collectivites }}</td>
+            </tr>
+            <tr>
+                <th>Contrat</th>
+                <td>{{ archiveParam.contrat }}</td>
+            </tr>
+            <tr>
+                <th>Libelle</th>
+                <td>{{ archiveParam.libelle }}</td>
+            </tr>
+            <tr>
+                <th>Ordre</th>
+                <td>{{ archiveParam.ordre }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ archiveParam.type }}</td>
+            </tr>
+            <tr>
+                <th>Reference</th>
+                <td>{{ archiveParam.reference }}</td>
+            </tr>
+            <tr>
+                <th>Action</th>
+                <td>{{ archiveParam.action }}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{% if archiveParam.createdAt %}{{ archiveParam.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('archiveparam_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('archiveparam_edit', { 'id': archiveParam.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

@@ -50,3 +50,9 @@ function annuler(url) {
         });
     });
 }
+
+
+$('.load-form-button').click(function(){
+    $('.loading').removeClass('hide');
+    $('.load-form').addClass('hide');
+});

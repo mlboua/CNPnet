@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>ArchiveParam list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Idparam</th>
+                <th>Partenaires</th>
+                <th>Collectivites</th>
+                <th>Contrat</th>
+                <th>Libelle</th>
+                <th>Ordre</th>
+                <th>Type</th>
+                <th>Reference</th>
+                <th>Action</th>
+                <th>Createdat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for archiveParam in archiveParams %}
+            <tr>
+                <td><a href="{{ path('archiveparam_show', { 'id': archiveParam.id }) }}">{{ archiveParam.id }}</a></td>
+                <td>{{ archiveParam.idParam }}</td>
+                <td>{{ archiveParam.partenaires }}</td>
+                <td>{{ archiveParam.collectivites }}</td>
+                <td>{{ archiveParam.contrat }}</td>
+                <td>{{ archiveParam.libelle }}</td>
+                <td>{{ archiveParam.ordre }}</td>
+                <td>{{ archiveParam.type }}</td>
+                <td>{{ archiveParam.reference }}</td>
+                <td>{{ archiveParam.action }}</td>
+                <td>{% if archiveParam.createdAt %}{{ archiveParam.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('archiveparam_show', { 'id': archiveParam.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('archiveparam_edit', { 'id': archiveParam.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('archiveparam_new') }}">Create a new entry</a>
+        </li>
+    </ul>
+{% endblock %}

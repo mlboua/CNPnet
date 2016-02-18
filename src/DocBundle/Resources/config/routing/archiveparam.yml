@@ -1,0 +1,24 @@
+archiveparam_index:
+    path:     /
+    defaults: { _controller: "DocBundle:ArchiveParam:index" }
+    methods:  GET
+
+archiveparam_show:
+    path:     /{id}/show
+    defaults: { _controller: "DocBundle:ArchiveParam:show" }
+    methods:  GET
+
+archiveparam_new:
+    path:     /new
+    defaults: { _controller: "DocBundle:ArchiveParam:new" }
+    methods:  [GET, POST]
+
+archiveparam_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "DocBundle:ArchiveParam:edit" }
+    methods:  [GET, POST]
+
+archiveparam_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "DocBundle:ArchiveParam:delete" }
+    methods:  [DELETE, GET]

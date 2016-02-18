@@ -2,6 +2,7 @@
 
 namespace DocBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
@@ -32,9 +33,9 @@ class ArchiveParam
     /**
      * @var Pdf
      *
-     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"}, inversedBy="archives")
+     * @ORM\ManyToMany(targetEntity="DocBundle\Entity\Pdf", cascade={"persist"})
      */
-    private $pdfSource;
+    private $pdfSources;
 
     /**
      * @var string
@@ -102,10 +103,13 @@ class ArchiveParam
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToOne(targetEntity="DocBundle\Entity\Version", inversedBy="archives")
+     * @ORM\ManyToMany(targetEntity="DocBundle\Entity\Version")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $version;
+    private $versions;
+
+
+    private $currentPdf;
 
 
     /**
@@ -154,30 +158,6 @@ class ArchiveParam
     {
         $this->id = $id;
         return $this;
-    }
-
-    /**
-     * Set pdf
-     *
-     * @param Pdf $pdf
-     *
-     * @return ArchiveParam
-     */
-    public function setPdfSource(Pdf $pdf = null)
-    {
-        $this->pdfSource = $pdf;
-
-        return $this;
-    }
-
-    /**
-     * Get pdf
-     *
-     * @return \DocBundle\Entity\Pdf
-     */
-    public function getPdfSource()
-    {
-        return $this->pdfSource;
     }
 
     /**
@@ -421,50 +401,135 @@ class ArchiveParam
     }
 
     /**
-     * Set version
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->pdfSources = new ArrayCollection();
+        $this->versions = new ArrayCollection();
+    }
+
+    /**
+     * Add pdfSource
      *
-     * @param \DocBundle\Entity\Version $version
+     * @param \DocBundle\Entity\Pdf $pdfSource
      *
      * @return ArchiveParam
      */
-    public function setVersioin(\DocBundle\Entity\Version $version = null)
+    public function addPdfSource(\DocBundle\Entity\Pdf $pdfSource)
     {
-        $this->version = $version;
+        $this->pdfSources[] = $pdfSource;
 
         return $this;
     }
 
     /**
-     * Get version
+     * Remove pdfSource
      *
-     * @return \DocBundle\Entity\Version
+     * @param \DocBundle\Entity\Pdf $pdfSource
      */
-    public function getVersioin()
+    public function removePdfSource(\DocBundle\Entity\Pdf $pdfSource)
     {
-        return $this->version;
+        $this->pdfSources->removeElement($pdfSource);
     }
 
     /**
-     * Set version
+     * Get pdfSources
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPdfSources()
+    {
+        return $this->pdfSources;
+    }
+
+    /**
+     * Add version
      *
      * @param \DocBundle\Entity\Version $version
      *
      * @return ArchiveParam
      */
-    public function setVersion(\DocBundle\Entity\Version $version = null)
+    public function addVersion(\DocBundle\Entity\Version $version)
     {
-        $this->version = $version;
+        $this->versions[] = $version;
 
         return $this;
     }
 
     /**
-     * Get version
+     * Remove version
      *
-     * @return \DocBundle\Entity\Version
+     * @param \DocBundle\Entity\Version $version
      */
-    public function getVersion()
+    public function removeVersion(\DocBundle\Entity\Version $version)
     {
-        return $this->version;
+        $this->versions->removeElement($version);
+    }
+
+    /**
+     * Get versions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVersions()
+    {
+        return $this->versions;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrentPdf()
+    {
+        return $this->currentPdf;
+    }
+
+    /**
+     * @param mixed $currentPdf
+     */
+    public function setCurrentPdf($currentPdf)
+    {
+        $this->currentPdf = $currentPdf;
+    }
+
+    /**
+     * Get last pdfSources
+     *
+     * @return Pdf
+     */
+    public function getLastPdfSource()
+    {
+        return $this->pdfSources->last();
+    }
+
+    /**
+     * Get last version
+     *
+     * @return Version
+     */
+    public function getLastVersioin()
+    {
+        return $this->versions->last();
+    }
+
+    /**
+     * @return ArchiveParam
+     */
+    public function hydrateNewArchive()
+    {
+        $rst = new ArchiveParam();
+        $rst->setType($this->getType());
+        $rst->setContrat($this->getContrat());
+        $rst->setCollectivites($this->getCollectivites());
+        $rst->setAction($this->getAction());
+        $rst->setIdParam($this->getIdParam());
+        $rst->setLibelle($this->getLibelle());
+        $rst->setOrdre($this->getOrdre());
+        $rst->setPartenaires($this->getPartenaires());
+        $rst->setCreatedAt(new DateTime());
+        $rst->setReference($this->getReference());
+
+        return $rst;
     }
 }

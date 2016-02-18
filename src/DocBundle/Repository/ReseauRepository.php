@@ -38,4 +38,19 @@ class ReseauRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return array
+     */
+    public function getCurrentVersion()
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->join('r.versions', 'v')
+            ->addSelect('v')
+            ->orderBy('v.numero', 'DESC')
+            ->setMaxResults(1);
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
 }

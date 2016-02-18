@@ -1,0 +1,33 @@
+{% extends 'DocBundle:Default:index.html.twig' %}
+
+{% block body %}
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class = "panel panel-success">
+                <div class = "panel-heading">
+                    <h3 class = "panel-title">
+                        <i class="glyphicon glyphicon-th-list"></i> Modification d'un paramètre (archive)
+                    </h3>
+                </div>
+                <div class = "panel-body">
+                    {% if confirmation is defined %}
+                        <div class="alert alert-success">
+                            <strong>Success!</strong> Le paramètre a été modifié avec succès.
+                        </div>
+                    {% endif %}
+                    <div class="well">
+                        {{ form_start(edit_form, {'attr': {'class': 'form-horizontal'}}) }}
+                        {{ include("DocBundle:archiveparam:form.html.twig") }}
+                        <button type="submit" class="glyphicon glyphicon-ok btn btn-primary btn-md">Modifier</button>
+                        {{ form_end(edit_form) }}
+                    </div>
+                </div>
+                <div class="panel-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -10,6 +10,10 @@ doc_version:
     resource: "@DocBundle/Resources/config/routing/version.yml"
     prefix:   /version
 
+doc_archiveparam:
+    resource: "@DocBundle/Resources/config/routing/archiveparam.yml"
+    prefix:   /archiveparam
+
 doc_homepage:
     path:     /home
     defaults: { _controller: DocBundle:Default:index }

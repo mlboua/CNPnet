@@ -9,8 +9,8 @@ reseau_history_versions:
     methods:  GET
 
 version_history_params:
-    path:     /{id}/version
-    defaults: { _controller: "DocBundle:Version:versionHistory" }
+    path:     /{id}/version/{page}
+    defaults: { _controller: "DocBundle:Version:versionHistory", page:1 }
     methods:  GET
 
 version_export_params:

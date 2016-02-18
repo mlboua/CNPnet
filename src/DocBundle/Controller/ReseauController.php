@@ -214,12 +214,12 @@ class ReseauController extends Controller
      */
     public function generateParamsAction(Request $request, Reseau $reseau, Version $version)
     {
-        ini_set('max_execution_time', 0);
         $version = $reseau->getVersions()->last();
         $form = $this->createForm('DocBundle\Form\VersionType', $version);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+            ini_set('max_execution_time', 0);
             $version->setUser($this->getUser()->getUsername());
             $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../generations/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
@@ -229,7 +229,7 @@ class ReseauController extends Controller
             $range = 20;
             $fs = new Filesystem();
             if ($fs->exists($reseauParamsDir)) {
-                $fs->remove($reseauParamsDir);
+                //$fs->remove($reseauParamsDir);
             }
             while ($block < count($parametrages)) {
                 $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $block, $range);
@@ -253,12 +253,12 @@ class ReseauController extends Controller
                     $archive = new ArchiveParam();
                     $pdf = $param->getLastPdfSource();
                     $pdf->setCurrent(0);
-                    $archive->setPdfSource($pdf);
+                    $archive->addPdfSource($pdf);
                     $archive->setParametrage($param);
                     $archive->setAction("Génération");
 
                     $version->addArchive($archive);
-                    $archive->setVersioin($version);
+                    $archive->addVersion($version);
 
                     $version->setEncours('0');
                     $reseau->addVersion($version);

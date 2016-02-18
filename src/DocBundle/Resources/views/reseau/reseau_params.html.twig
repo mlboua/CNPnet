@@ -95,7 +95,7 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <ul class="pagination">
+                        <ul class="pagination pull-right btn-group">
                             {% for p in range(1, maxPerPage) %}
                                 <li{% if p == page %} class="active"{% endif %}>
                                     <a href="{{ path('reseau_show_parametrage', {'id': reseau.id, 'page': p}) }}">{{ p }}</a>
@@ -195,18 +195,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        function pression(url) {
-            $('#confirm-delete').modal('show');
-            $('.btn-ok').click(function(){
-                alert(url);
-            });
-        }
-
-
-        $('.load-form-button').click(function(){
-            $('.loading').removeClass('hide');
-            $('.load-form').addClass('hide');
-        });
         $(document).ready(function() {
             //synchroneRequest('#generateForm');
         });

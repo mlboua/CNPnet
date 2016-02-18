@@ -3,6 +3,7 @@
 namespace DocBundle\Repository;
 
 use DocBundle\Entity\Version;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 
 /**
@@ -15,17 +16,19 @@ class ArchiveParamRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * @param Version $version
+     * @param int $page
+     * @param int $maxPerPage
      * @return array
      */
-    public function getArchivesByVersion(Version $version)
+    public function getArchivesByVersion(Version $version, $page = 1, $maxPerPage=20)
     {
         $qb = $this->createQueryBuilder('ar');
-        $qb->join('ar.version', 'v')
+        $qb->join('ar.versions', 'v')
             ->addSelect('v')
             ->where('v.id = :id')
             ->setParameter('id', $version->getId());
-        return $qb
-            ->getQuery()
-            ->getResult();
+        $qb->setFirstResult(($page-1) * $maxPerPage)
+            ->setMaxResults($maxPerPage);
+        return new Paginator($qb, true);
     }
 }

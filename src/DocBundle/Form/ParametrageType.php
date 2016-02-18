@@ -28,9 +28,6 @@ class ParametrageType extends AbstractType
                 'multiple' => false,
                 'required' => true,
                 'placeholder' => 'Choisir le réseau',
-                /*'query_builder' => function(ReseauRepository $pr){
-                    $pr->getAll();
-                }*/
             ))
             ->add('partenaires', TextType::class, array(
                   'data' => 'Tous',
@@ -42,12 +39,7 @@ class ParametrageType extends AbstractType
             ->add('ordre')
             ->add('type')
             ->add('reference')
-           /* ->add('commentaire')
-            ->add('updateAt', 'datetime')
-            ->add('createdAt', 'datetime')*/
-            //->add('pdfSource', PdfType::class)
-           // ->add('Valider', SubmitType::class)
-           ->add('currentPdf',  PdfType::class)
+            ->add('currentPdf',  PdfType::class)
         ;
     }
     

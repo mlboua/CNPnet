@@ -28,7 +28,7 @@ class ParametrageController extends Controller
     public function indexAction($page)
     {
         $em = $this->getDoctrine()->getManager();
-        $maxPerPage=50;
+        $maxPerPage=30;
         $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages($page, $maxPerPage);
         $maxPerPage = ceil(count($parametrages)/$maxPerPage);
         if ($page > $maxPerPage) {
@@ -126,20 +126,11 @@ class ParametrageController extends Controller
                 $version->setNumero($currentVersion->getNumero() + 1);
                 $version->setReseau($parametrage->getReseau());
                 $parametrage->getReseau()->addVersion($version);
-
-                $archive = new ArchiveParam();
-                $pdf = $parametrage->getLastPdfSource();
-                //$pdf->setCurrent(0);
-                $archive->setPdfSource($pdf);
-                $archive->setParametrage($parametrage);
-                $archive->setAction("Modification");
-
-                $version->addArchive($archive);
-                $archive->setVersioin($version);
             }
 
             if($parametrage->getCurrentPdf()->getFile() !== null) {
                 $pdf = new Pdf();
+                $pdf->setCurrent(1);
                 $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
                 $pdf->setFile(stream_get_contents($stream));
                 $pdf->setTitle($parametrage->generateFileName('.pdf'));
@@ -147,6 +138,7 @@ class ParametrageController extends Controller
                 $parametrage->addPdfSource($pdf);
             } else {
                 $parametrage->getLastPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
+                $parametrage->getLastPdfSource()->setCurrent(1);
             }
 
             $em->persist($parametrage);
@@ -208,17 +200,6 @@ class ParametrageController extends Controller
         return $this->render('DocBundle:parametrage:show.html.twig', array(
             'parametrage' => $parametrage
         ));
-
-        /*$form = $this->createDeleteForm($parametrage);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($parametrage);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('parametrage_index');*/
     }
 
     /**

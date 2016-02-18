@@ -56,7 +56,7 @@ class Pdf
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="DocBundle\Entity\ArchiveParam", cascade={"persist", "remove"}, mappedBy="pdfSource")
+     * @ORM\ManyToMany(targetEntity="DocBundle\Entity\ArchiveParam", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $archives;
