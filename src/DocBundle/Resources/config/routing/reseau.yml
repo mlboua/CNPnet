@@ -27,6 +27,8 @@ reseau_show_parametrage:
     path:     /{id}/parametrages/{page}
     defaults: { _controller: "DocBundle:Reseau:showParametrage", page: 1 }
     methods:  GET
+    requirements:
+        page: \d+
 
 reseau_generate_params:
     path:     /{id}/generate

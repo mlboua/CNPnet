@@ -2,6 +2,8 @@ parametrage_index:
     path:     /{page}
     defaults: { _controller: "DocBundle:Parametrage:index", page: 1 }
     methods:  GET
+    requirements:
+        page: \d+
 
 parametrage_show:
     path:     /{id}/show
