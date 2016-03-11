@@ -111,6 +111,13 @@ class Parametrage
     private $editing;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="liasse", type="boolean", nullable=true)
+     */
+    private $liasse;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -439,4 +446,22 @@ class Parametrage
     {
         return $this->editing;
     }
+
+    /**
+     * @return string
+     */
+    public function isLiasse()
+    {
+        return $this->liasse;
+    }
+
+    /**
+     * @param string $liasse
+     */
+    public function setLiasse($liasse)
+    {
+        $this->liasse = $liasse;
+    }
+
+
 }

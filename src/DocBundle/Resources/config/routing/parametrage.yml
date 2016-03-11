@@ -39,3 +39,8 @@ parametrage_import_csv:
     path:     /csv/import
     defaults: { _controller: "DocBundle:Parametrage:importCSV" }
     methods:  [GET, POST]
+
+parametrage_liasse_pdf:
+    path:     /liassepdf
+    defaults: { _controller: "DocBundle:Parametrage:getLiassePdf" }
+    methods:  [GET, POST]

@@ -80,4 +80,22 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @return array
+     */
+    public function findLiassePdf($ref, $cont)
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->join('p.pdfSources', 'pdf')
+            ->addSelect('pdf')
+            ->where('p.reference = :ref')
+            ->andWhere('p.contrat = :cont')
+            ->andWhere($qb->expr()->in('p.type', ':types'))
+            ->orWhere('p.contrat = :cont_com')
+            ->setParameters(array('ref' => $ref, 'cont' => $cont, 'cont_com' => 'COMMUN', 'types'=>array('DA', 'QS', 'CG')));
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
 }

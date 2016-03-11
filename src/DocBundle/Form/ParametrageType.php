@@ -2,12 +2,9 @@
 
 namespace DocBundle\Form;
 
-use DocBundle\Repository\ParametrageRepository;
-use DocBundle\Repository\ReseauRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -37,8 +34,11 @@ class ParametrageType extends AbstractType
             ->add('contrat')
             ->add('libelle')
             ->add('ordre')
-            ->add('type')
             ->add('reference')
+            ->add('liasse', CheckboxType::class,  array(
+                'label'    => 'Liasse',
+                'required' => false,))
+            ->add('type', TextType::class)
             ->add('currentPdf',  PdfType::class)
         ;
     }

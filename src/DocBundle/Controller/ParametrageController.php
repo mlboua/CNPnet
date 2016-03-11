@@ -2,18 +2,20 @@
 
 namespace DocBundle\Controller;
 
-use DateTime;
-use DocBundle\Entity\ArchiveParam;
+
 use DocBundle\Entity\ArchivePdf;
 use DocBundle\Entity\Pdf;
 use DocBundle\Entity\Version;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
 use DocBundle\Entity\Parametrage;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Parametrage controller.
@@ -52,14 +54,20 @@ class ParametrageController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
             $pdf = new Pdf();
+
+            if ($parametrage->isLiasse()) {
+                $parametrage->setType('LIASSE');
+                $pdf = $this->composerLiasse($parametrage, $request, $em);
+            } else {
+                $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
+                $pdf->SetFile(stream_get_contents($stream));
+            }
             $pdf->setCurrent(1);
             $pdf->setTitle($parametrage->generateFileName('.pdf'));
-            $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
-            $pdf->SetFile(stream_get_contents($stream));
             $pdf->setParametrage($parametrage);
             $parametrage->addPdfSource($pdf);
-            $em = $this->getDoctrine()->getManager();
 
             $currentVersion = $parametrage->getReseau()->getVersions()->last();
             if (!$currentVersion->getEnCours()) {
@@ -79,6 +87,45 @@ class ParametrageController extends Controller
             'parametrage' => $parametrage,
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * @param Parametrage $parametrage
+     * @param Request $request
+     * @param $em
+     * @return Pdf
+     */
+    public function composerLiasse (Parametrage $parametrage, Request $request, $em) {
+        $pdf = new Pdf();
+        //TODO: Repertoire en dur à enlever (parameters.yml)
+        $mergingDir = $this->container->getParameter('kernel.root_dir').'/../../generations/tmp';
+        $pythonDir = $this->container->getParameter('kernel.root_dir').'/../src/python/compo.py';
+        $fs = new Filesystem();
+        $fs->mkdir($mergingDir);
+        $liassePdf = $request->request->get('pdfs');
+        sort($liassePdf);
+        $pdfs = $em->getRepository('DocBundle:Pdf')->findById($liassePdf);
+        foreach ($pdfs as $p) {
+            file_put_contents(
+                $mergingDir .'/'. $request->request->get($p->getId()).'.pdf',
+                $p->getFile()
+            );
+        }
+        //TODO: Revoir l'exécution du script python (parameters.yml)
+        $cmd = 'python "'.$pythonDir.'" "'.$mergingDir.'" "'.$mergingDir.'/'.$parametrage->generateFileName('.pdf').'"';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+            //echo $process->getOutput();
+        } catch (ProcessFailedException $e) {
+            throw $this->createNotFoundException("Erreur lors de la composition de la liasse. Paramétrage non créé");
+        }
+        $stream = fopen($mergingDir.'/'.$parametrage->generateFileName('.pdf'), 'rb');
+        $pdf->SetFile(stream_get_contents($stream));
+        fclose($stream);
+        $fs->remove($mergingDir);
+
+        return $pdf;
     }
 
     /**
@@ -128,18 +175,29 @@ class ParametrageController extends Controller
                 $parametrage->getReseau()->addVersion($version);
             }
 
-            if($parametrage->getCurrentPdf()->getFile() !== null) {
-                $pdf = new Pdf();
+            if ($parametrage->isLiasse()) {
+                $parametrage->setType('LIASSE');
+                $pdf = $this->composerLiasse($parametrage, $request, $em);
                 $pdf->setCurrent(1);
-                $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
-                $pdf->setFile(stream_get_contents($stream));
                 $pdf->setTitle($parametrage->generateFileName('.pdf'));
                 $pdf->setParametrage($parametrage);
                 $parametrage->addPdfSource($pdf);
             } else {
-                $parametrage->getLastPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
-                $parametrage->getLastPdfSource()->setCurrent(1);
+                if($parametrage->getCurrentPdf()->getFile() != null) {
+                    $pdf = new Pdf();
+                    $pdf->setCurrent(1);
+                    $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
+                    $pdf->setFile(stream_get_contents($stream));
+                    $pdf->setTitle($parametrage->generateFileName('.pdf'));
+                    $pdf->setParametrage($parametrage);
+                    $parametrage->addPdfSource($pdf);
+                } else {
+                    $parametrage->getLastPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
+                    $parametrage->getLastPdfSource()->setCurrent(1);
+                }
             }
+
+
 
             $em->persist($parametrage);
             $em->flush();
@@ -323,5 +381,28 @@ class ParametrageController extends Controller
             fclose($handle);
         }
         return $data;
+    }
+
+    /**
+     *
+     */
+    public function getLiassePdfAction(Request $request) {
+        $ref = $request->request->get('reference');
+        $cont = $request->request->get('contrat');
+        $em = $this->getDoctrine()->getManager();
+        $param = $em->getRepository('DocBundle:Parametrage')->findLiassePdf($ref, $cont);
+        $data = array();
+        foreach ($param as $p) {
+            $data[] = $this->getPdfInfos($p);
+        }
+        return new JsonResponse($data);
+    }
+
+    private function getPdfInfos(Parametrage $parametrage) {
+        $e = array(
+            'pdf_id' => $parametrage->getLastPdfSource()->getId(),
+            'pdf' => $parametrage->getLastPdfSource()->getTitle()
+        );
+        return $e;
     }
 }

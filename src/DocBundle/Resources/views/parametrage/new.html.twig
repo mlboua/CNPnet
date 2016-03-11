@@ -30,17 +30,55 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        checkboxAll = function(e)
-        {
-            var nameRoot = $(this).attr('name');
-            nameRoot = nameRoot.substring(0,nameRoot.lastIndexOf('['));
-            var group = 'input[type=checkbox][name^="' + nameRoot + '"]';
-            var checked = $(this).prop('checked') ? true : false;
-            $(group).prop('checked', checked);
+        $('#parametrage_liasse').on('change', function() {
+            if(this.checked) {
+                if (checkRequireField()) {
+                    hideFieds();
+                    $('.liasse-pdfs').removeClass('hide');
+                    sendData();
+                } else {
+                    this.checked = false;
+                }
+            } else {
+                $('#liasse-ok').removeClass('hide');
+                $('.liasse-pdfs').empty();
+                $('.liasse-pdfs').addClass('hide');
+            }
+        });
+
+        var sendData = function () {
+            var cont = $('#parametrage_contrat').val();
+            var ref = $('#parametrage_reference').val();
+            var data = {reference: ref, contrat: cont};
+            $.post('/parametrage/liassepdf', data)
+                .done(function (elt) {
+                    $('.liasse-pdfs').empty();
+                    for (var i = 0; i< elt.length; i++) {
+                        var orderField = '<input type="number" name="'+elt[i].pdf_id+'" class="col-xs-2" placeholder="ordre">';
+                        var champ = '<div class="col-sm-4"><input type="checkbox" name="pdfs[]" value="'+elt[i].pdf_id+'">'+elt[i].pdf+'</div>' ;
+                        var pdf = '<div class="form-group"><label for="" class="col-sm-3 control-label"></label>'+champ+''+orderField+'</div>';
+                        $('.liasse-pdfs').append(pdf);
+                    }
+                });
+        };
+
+        var checkRequireField = function () {
+            if ($('#parametrage_contrat').val().length != 0 && $('#parametrage_reference').val().length != 0) {
+                //$('.liasse-msg').addClass('hide');
+                return true;
+            }
+            $('.liasse-msg').removeClass('hide');
+            return false;
+        };
+
+        var hideFieds = function () {
+            var toHide = $('#liasse-ok');
+            toHide.find('#parametrage_type').removeAttr('required');
+            toHide.addClass('hide');
         };
         $(document).ready(function()
         {
-            $('.checkbox-all').change(checkboxAll);
+
         });
     </script>
 {% endblock %}
