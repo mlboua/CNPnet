@@ -94,10 +94,8 @@ class ArchiveParamController extends Controller
 
             $currentVersion = $archiveParam->getVersions()->last();
             $numero = $currentVersion->getNumero()+ 0.1;
-            var_dump(count($currentVersion->getArchives()));
             $currentVersion->removeArchive($archiveParam);
             $archives = $currentVersion->getArchives();
-            var_dump(count($currentVersion->getArchives()));
             $version = new Version();
             $version->setNumero($numero);
             //$version->addGroupArchives($archives);

@@ -50,12 +50,12 @@
             var cont = $('#parametrage_contrat').val();
             var ref = $('#parametrage_reference').val();
             var data = {reference: ref, contrat: cont};
-            $.post('/parametrage/liassepdf', data)
+            $.post($("#baseUrl").val()+'/parametrage/liassepdf', data)
                 .done(function (elt) {
                     $('.liasse-pdfs').empty();
                     for (var i = 0; i< elt.length; i++) {
                         var orderField = '<input type="number" name="'+elt[i].pdf_id+'" class="col-xs-2" placeholder="ordre">';
-                        var pdfLink = '<a href="/parametrage/'+elt[i].pdf_id+'/pdf">'+elt[i].pdf+'</a>';
+                        var pdfLink = '<a href="'+$("#baseUrl").val()+'/parametrage/'+elt[i].pdf_id+'/pdf">'+elt[i].pdf+'</a>';
                         var champ = '<div class="col-sm-6"><input type="checkbox" name="pdfs[]" value="'+elt[i].pdf_id+'"> '+pdfLink+'</div>' ;
                         var pdf = '<div class="form-group"><label for="" class="col-sm-2 control-label"></label>'+champ+''+orderField+'</div>';
                         $('.liasse-pdfs').append(pdf);
@@ -78,7 +78,7 @@
         };
         $(document).ready(function()
         {
-
+            //alert($("#baseUrl").val()+'/parametrage/');
         });
     </script>
 {% endblock %}
