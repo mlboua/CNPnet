@@ -55,8 +55,9 @@
                     $('.liasse-pdfs').empty();
                     for (var i = 0; i< elt.length; i++) {
                         var orderField = '<input type="number" name="'+elt[i].pdf_id+'" class="col-xs-2" placeholder="ordre">';
-                        var champ = '<div class="col-sm-4"><input type="checkbox" name="pdfs[]" value="'+elt[i].pdf_id+'">'+elt[i].pdf+'</div>' ;
-                        var pdf = '<div class="form-group"><label for="" class="col-sm-3 control-label"></label>'+champ+''+orderField+'</div>';
+                        var pdfLink = '<a href="/parametrage/'+elt[i].pdf_id+'/pdf">'+elt[i].pdf+'</a>';
+                        var champ = '<div class="col-sm-6"><input type="checkbox" name="pdfs[]" value="'+elt[i].pdf_id+'"> '+pdfLink+'</div>' ;
+                        var pdf = '<div class="form-group"><label for="" class="col-sm-2 control-label"></label>'+champ+''+orderField+'</div>';
                         $('.liasse-pdfs').append(pdf);
                     }
                 });
@@ -64,7 +65,6 @@
 
         var checkRequireField = function () {
             if ($('#parametrage_contrat').val().length != 0 && $('#parametrage_reference').val().length != 0) {
-                //$('.liasse-msg').addClass('hide');
                 return true;
             }
             $('.liasse-msg').removeClass('hide');
