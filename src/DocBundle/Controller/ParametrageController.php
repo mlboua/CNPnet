@@ -19,6 +19,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * Parametrage controller.
  *
+ * TODO: remove some logics from the controller (create services)
  */
 class ParametrageController extends Controller
 {
@@ -68,7 +69,6 @@ class ParametrageController extends Controller
                     $p->addMeElementOfLiasse($parametrage);
                     $parametrage->addMyComponent($p);
                 }
-                //TODO: Should be removed
                 $pdf = $this->composerLiasse($parametrage);
                 $pdf->setParametrage($parametrage);
                 $parametrage->addPdfSource($pdf);
@@ -136,7 +136,6 @@ class ParametrageController extends Controller
      * @internal param $em
      */
     public function composerLiasse (Parametrage $parametrage) {
-        //TODO: Repertoire en dur à enlever (parameters.yml)
         $mergingDir = $this->container->getParameter('tmp_compo_dir');
         $pythonDir = $this->container->getParameter('kernel.root_dir').'/../src/python/compo.py';
         $fs = new Filesystem();
@@ -204,7 +203,6 @@ class ParametrageController extends Controller
                     $p->addMeElementOfLiasse($parametrage);
                     $parametrage->addMyComponent($p);
                 }
-                //TODO: Should be removed
                 $pdf = $this->composerLiasse($parametrage);
                 $pdf->setParametrage($parametrage);
                 $parametrage->addPdfSource($pdf);
@@ -345,7 +343,6 @@ class ParametrageController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             ini_set('max_execution_time', 0);
-            // TODO: Change source pdf file path
             // TODO: Change pdf file names column in the CSV file
             $pdfDir = $this->container->getParameter('resources_dir');
             $file = $form->get('submitFile')->getData();

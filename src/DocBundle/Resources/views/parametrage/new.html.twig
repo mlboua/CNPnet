@@ -6,10 +6,11 @@
             <div class = "panel panel-success">
                 <div class = "panel-heading">
                     <h3 class = "panel-title">
-                        <i class="glyphicon glyphicon-th-list"></i> Modification d'un paramètre
+                        <i class="glyphicon glyphicon-th-list"></i> Ajout d'un paramètre
                     </h3>
                 </div>
                 <div class = "panel-body">
+                    <h3><span class="label label-default">Pour les liasses, cochez les documents qui seront inclus dans la liasse et siasissez l'ordre.</span></h3>
                     <div class="well">
                         {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
 
@@ -54,10 +55,10 @@
                 .done(function (elt) {
                     $('.liasse-pdfs').empty();
                     for (var i = 0; i< elt.length; i++) {
-                        var orderField = '<input type="number" name="'+elt[i].pdf_id+'" class="col-xs-2" placeholder="ordre">';
+                        var orderField = '<input type="number" id="'+elt[i].pdf_id+'" name="'+elt[i].pdf_id+'" placeholder="ordre">';
                         var pdfLink = '<a href="'+$("#baseUrl").val()+'/parametrage/'+elt[i].pdf_id+'/pdf">'+elt[i].pdf+'</a>';
-                        var champ = '<div class="col-sm-6"><input type="checkbox" name="pdfs[]" value="'+elt[i].pdf_id+'"> '+pdfLink+'</div>' ;
-                        var pdf = '<div class="form-group"><label for="" class="col-sm-2 control-label"></label>'+champ+''+orderField+'</div>';
+                        var champ = '<div class="col-sm-4"><input type="checkbox" name="pdfs[]" value="'+elt[i].pdf_id+'"> '+orderField+'</div>' ;
+                        var pdf = '<div class="form-group"><label for="" class="col-sm-3 control-label">'+pdfLink+'</label>'+champ+'</div>';
                         $('.liasse-pdfs').append(pdf);
                     }
                 });
@@ -76,9 +77,14 @@
             toHide.find('#parametrage_type').removeAttr('required');
             toHide.addClass('hide');
         };
+
+        $('input').on('change', function() {
+            //alert($(this).val());
+        });
+
         $(document).ready(function()
         {
-            //alert($("#baseUrl").val()+'/parametrage/');
+
         });
     </script>
 {% endblock %}
