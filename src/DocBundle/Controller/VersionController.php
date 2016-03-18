@@ -23,6 +23,7 @@ class VersionController extends Controller
     /**
      * Generate a reaseau params.
      * TODO: Check that files are successfully created
+     * TODO: Duplicated function (to solve)
      * @param Request $request
      * @param Reseau $reseau
      * @param Version $version
@@ -37,7 +38,7 @@ class VersionController extends Controller
         if($form->isSubmitted() && $form->isValid()) {
             ini_set('max_execution_time', 0);
             $version->setUser($this->getUser()->getUsername());
-            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../generations/'.$reseau->getCode();
+            $reseauParamsDir = $this->container->getParameter('generation_dir').'/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
 
             $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version);
@@ -45,7 +46,7 @@ class VersionController extends Controller
             $range = 20;
             $fs = new Filesystem();
             if ($fs->exists($reseauParamsDir)) {
-                //$fs->remove($reseauParamsDir);
+                $fs->remove($reseauParamsDir);
             }
             while ($block < count($parametrages)) {
                 $parametrages = $em->getRepository('DocBundle:ArchiveParam')->getArchivesByVersion($version, $block, $range);

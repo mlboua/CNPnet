@@ -15,6 +15,7 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param $reseauId
      * @return array
+     * TODO: fetch only current pdf and liasseComponent instead of all
      */
     public function getParametrageByReseau($reseauId, $page = 1, $maxPerPage=20)
     {
@@ -24,8 +25,6 @@ class ParametrageRepository extends \Doctrine\ORM\EntityRepository
             ->addSelect('res')
             ->addSelect('pdf')
             ->where('res.id = :id')
-            ->andWhere('pdf.current = :current')
-            ->setParameter('current', 1)
             ->setParameter('id', $reseauId)
             ->orderBy('p.ordre', 'ASC');
         $qb->setFirstResult(($page-1) * $maxPerPage)

@@ -12,7 +12,10 @@
                     <div class = "panel-heading">
                         <h3 class = "panel-title">
                             <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }}
-                             <span class="label label-danger" id="version"> V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
+                            <span class="label label-danger" id="version"> V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
+                            <a href="{{ path('parametrage_new') }}">
+                                <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
+                            </a>
                         </h3>
                     </div>
                     <div class = "panel-body">
@@ -66,11 +69,9 @@
                                                     <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
                                                     </button>
                                                 </a>
-                                                <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
                                                 <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
                                                          class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
                                                 </button>
-                                                <!--</a>-->
                                             </div>
                                         {% else %}
                                             <div class="not-deleting">
@@ -78,11 +79,9 @@
                                                     <button type="button" class="btn btn-info btn-xs glyphicon glyphicon-pencil" title="Modifier">
                                                     </button>
                                                 </a>
-                                                <!--<a href="{{ path('parametrage_delete', { 'id': parametrage.id }) }}">-->
                                                 <button  onclick="supprimer('{{ path('parametrage_delete', { 'id': parametrage.id }) }}')"
                                                          class="btn btn-danger btn-xs glyphicon glyphicon-trash" title="Supprimer">
                                                 </button>
-                                                <!--</a>-->
                                             </div>
                                             <div class="deleting hide">
                                                 <button  onclick="annuler('{{ path('parametrage_cancel_delete', { 'id': parametrage.id }) }}')"
@@ -200,7 +199,6 @@
     {{ parent() }}
     <script>
         $(document).ready(function() {
-            //synchroneRequest('#generateForm');
         });
     </script>
 {% endblock %}

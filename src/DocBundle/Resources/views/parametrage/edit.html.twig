@@ -54,11 +54,23 @@
             }
         };
 
+        $('#parametrage_liasse').on('change', function() {
+            displayList();
+        });
+
+        $('#parametrage_reference').on('change', function() {
+            displayList();
+        });
+
+        $('#parametrage_contrat').on('change', function() {
+            displayList();
+        });
+
         var sendData = function () {
             var cont = $('#parametrage_contrat').val();
             var ref = $('#parametrage_reference').val();
             var data = {reference: ref, contrat: cont};
-            $.post('/parametrage/liassepdf', data)
+            $.post($("#baseUrl").val()+'/parametrage/liassepdf', data)
                     .done(function (elt) {
                         $('.liasse-pdfs').empty();
                         for (var i = 0; i< elt.length; i++) {

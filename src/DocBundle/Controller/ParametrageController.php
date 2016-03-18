@@ -2,7 +2,6 @@
 
 namespace DocBundle\Controller;
 
-
 use DocBundle\Entity\ArchivePdf;
 use DocBundle\Entity\Pdf;
 use DocBundle\Entity\Version;
@@ -33,9 +32,9 @@ class ParametrageController extends Controller
         $maxPerPage=30;
         $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages($page, $maxPerPage);
         $maxPerPage = ceil(count($parametrages)/$maxPerPage);
-        if ($page > $maxPerPage) {
+        /*if ($page > $maxPerPage) {
             throw $this->createNotFoundException("La page ".$page." n'existe pas.");
-        }
+        }*/
         return $this->render('DocBundle:parametrage:index.html.twig', array(
             'parametrages' => $parametrages,
             'maxPerPage' => $maxPerPage,
@@ -55,19 +54,34 @@ class ParametrageController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $pdf = new Pdf();
 
             if ($parametrage->isLiasse()) {
                 $parametrage->setType('LIASSE');
-                $pdf = $this->composerLiasse($parametrage, $request, $em);
+                $liassePdf = $request->request->get('pdfs');
+                if (count($liassePdf) == 0) {
+                    throw $this->createNotFoundException("Vous n'avez pas selectionné les composants de la liasse.");
+                }
+                sort($liassePdf);
+                $ParamInLiasse = $em->getRepository('DocBundle:Parametrage')->findById($liassePdf);
+                foreach ($ParamInLiasse as $p) {
+                    $p->setOrderInLiasse($request->request->get($p->getId()));
+                    $p->addMeElementOfLiasse($parametrage);
+                    $parametrage->addMyComponent($p);
+                }
+                //TODO: Should be removed
+                $pdf = $this->composerLiasse($parametrage);
+                $pdf->setParametrage($parametrage);
+                $parametrage->addPdfSource($pdf);
             } else {
+                $pdf = new Pdf();
                 $stream = fopen($parametrage->getCurrentPdf()->getFile(), 'rb');
                 $pdf->SetFile(stream_get_contents($stream));
+                $pdf->setCurrent(1);
+                $pdf->setTitle($parametrage->generateFileName('.pdf'));
+                $pdf->setParametrage($parametrage);
+                $parametrage->addPdfSource($pdf);
             }
-            $pdf->setCurrent(1);
-            $pdf->setTitle($parametrage->generateFileName('.pdf'));
-            $pdf->setParametrage($parametrage);
-            $parametrage->addPdfSource($pdf);
+
 
             $currentVersion = $parametrage->getReseau()->getVersions()->last();
             if (!$currentVersion->getEnCours()) {
@@ -89,44 +103,7 @@ class ParametrageController extends Controller
         ));
     }
 
-    /**
-     * @param Parametrage $parametrage
-     * @param Request $request
-     * @param $em
-     * @return Pdf
-     */
-    public function composerLiasse (Parametrage $parametrage, Request $request, $em) {
-        $pdf = new Pdf();
-        //TODO: Repertoire en dur à enlever (parameters.yml)
-        $mergingDir = $this->container->getParameter('kernel.root_dir').'/../../generations/tmp';
-        $pythonDir = $this->container->getParameter('kernel.root_dir').'/../src/python/compo.py';
-        $fs = new Filesystem();
-        $fs->mkdir($mergingDir);
-        $liassePdf = $request->request->get('pdfs');
-        sort($liassePdf);
-        $pdfs = $em->getRepository('DocBundle:Pdf')->findById($liassePdf);
-        foreach ($pdfs as $p) {
-            file_put_contents(
-                $mergingDir .'/'. $request->request->get($p->getId()).'.pdf',
-                $p->getFile()
-            );
-        }
-        //TODO: Revoir l'exécution du script python (parameters.yml)
-        $cmd = 'python "'.$pythonDir.'" "'.$mergingDir.'" "'.$mergingDir.'/'.$parametrage->generateFileName('.pdf').'"';
-        $process = new Process($cmd);
-        try {
-            $process->mustRun();
-            //echo $process->getOutput();
-        } catch (ProcessFailedException $e) {
-            throw $this->createNotFoundException("Erreur lors de la composition de la liasse. Paramétrage non créé");
-        }
-        $stream = fopen($mergingDir.'/'.$parametrage->generateFileName('.pdf'), 'rb');
-        $pdf->SetFile(stream_get_contents($stream));
-        fclose($stream);
-        $fs->remove($mergingDir);
 
-        return $pdf;
-    }
 
     /**
      * Finds and displays a Parametrage entity.
@@ -143,14 +120,53 @@ class ParametrageController extends Controller
     }
 
     /**
- * Finds and displays a Parametrage associated pdf document.
- *
- */
+     * Finds and displays a Parametrage associated pdf document.
+     *
+     */
     public function showPdfAction(Parametrage $parametrage)
     {
-        $pdfFile = $parametrage->getLastPdfSource()->getFile();
-        $response = new Response(stream_get_contents($pdfFile), 200, array('Content-Type' => 'application/pdf'));
-        return $response;
+        $pdfFile = $parametrage->getLastPdfSource();
+        return new Response(stream_get_contents($pdfFile->getFile()), 200, array('Content-Type' => 'application/pdf'));
+    }
+
+    /**
+     * @param Parametrage $parametrage
+     * @return Pdf
+     * @internal param Request $request
+     * @internal param $em
+     */
+    public function composerLiasse (Parametrage $parametrage) {
+        //TODO: Repertoire en dur à enlever (parameters.yml)
+        $mergingDir = $this->container->getParameter('tmp_compo_dir');
+        $pythonDir = $this->container->getParameter('kernel.root_dir').'/../src/python/compo.py';
+        $fs = new Filesystem();
+        if ($fs->exists($mergingDir)) {
+            $fs->remove($mergingDir);
+        }
+        $fs->mkdir($mergingDir);
+        $components = $parametrage->getMyComponents();
+        foreach ($components as $comp) {
+            file_put_contents(
+                $mergingDir .'/'. $comp->getOrderInLiasse().'.pdf',
+                $comp->getLastPdfSource()->getFile()
+            );
+        }
+        //TODO: Revoir l'exécution du script python (parameters.yml)
+        $cmd = 'python "'.$pythonDir.'" "'.$mergingDir.'" "'.$mergingDir.'/'.$parametrage->generateFileName('.pdf').'"';
+        $process = new Process($cmd);
+        try {
+            $process->mustRun();
+            //echo $process->getOutput();
+        } catch (ProcessFailedException $e) {
+            throw $this->createNotFoundException("Erreur lors de la composition de la liasse. Paramétrage non créé". $e->getMessage());
+        }
+        $stream = fopen($mergingDir.'/'.$parametrage->generateFileName('.pdf'), 'rb');
+        $pdf = new Pdf();
+        $pdf->setTitle($parametrage->generateFileName('.pdf'));
+        $pdf->setFile($stream);
+        //TODO: Should close the stream
+        //fclose($stream);
+        return $pdf;
     }
 
     /**
@@ -177,9 +193,19 @@ class ParametrageController extends Controller
 
             if ($parametrage->isLiasse()) {
                 $parametrage->setType('LIASSE');
-                $pdf = $this->composerLiasse($parametrage, $request, $em);
-                $pdf->setCurrent(1);
-                $pdf->setTitle($parametrage->generateFileName('.pdf'));
+                $liassePdf = $request->request->get('pdfs');
+                if (count($liassePdf) == 0) {
+                    throw $this->createNotFoundException("Vous n'avez pas selectionné les composants de la liasse.");
+                }
+                sort($liassePdf);
+                $paramInLiasse = $em->getRepository('DocBundle:Parametrage')->findById($liassePdf);
+                foreach ($paramInLiasse as $p) {
+                    $p->setOrderInLiasse($request->request->get($p->getId()));
+                    $p->addMeElementOfLiasse($parametrage);
+                    $parametrage->addMyComponent($p);
+                }
+                //TODO: Should be removed
+                $pdf = $this->composerLiasse($parametrage);
                 $pdf->setParametrage($parametrage);
                 $parametrage->addPdfSource($pdf);
             } else {
@@ -195,9 +221,16 @@ class ParametrageController extends Controller
                     $parametrage->getLastPdfSource()->setTitle($parametrage->generateFileName('.pdf'));
                     $parametrage->getLastPdfSource()->setCurrent(1);
                 }
+                // On compose à nouveau les liasses qui contienent ce document
+                // TODO: à mettre dans une fonction preUpdate (event doctrine)
+                $ls = $parametrage->getMeElementOfLiasses();
+                foreach ($ls as $param) {
+                    $pdf = $this->composerLiasse($param);
+                    $pdf->setCurrent(1);
+                    $param->addPdfSource($pdf);
+                    $pdf->setParametrage($param);
+                }
             }
-
-
 
             $em->persist($parametrage);
             $em->flush();
@@ -209,7 +242,6 @@ class ParametrageController extends Controller
                 'delete_form' => $deleteForm->createView(),
             ));
         }
-
         return $this->render('DocBundle:parametrage:edit.html.twig', array(
             'parametrage' => $parametrage,
             'form' => $editForm->createView(),
@@ -231,13 +263,27 @@ class ParametrageController extends Controller
         if ($request->isMethod('GET')) {
             if ($parametrage->getDeleting()) {
                 $currentVersion = $parametrage->getReseau()->getVersions()->last();
+                $version = new Version();
                 if (!$currentVersion->getEnCours()) {
-                    $version = new Version();
                     $version->setEnCours('1');
                     $version->setNumero($currentVersion->getNumero() + 1);
                     $version->setReseau($parametrage->getReseau());
                     $parametrage->getReseau()->addVersion($version);
+                } else {
+                    $version = $currentVersion;
                 }
+                // On compose à nouveau les liasses qui contienent ce document
+                // TODO: à mettre dans une fonction preUpdate (event doctrine)
+                $ls = $parametrage->getMeElementOfLiasses();
+                foreach ($ls as $param) {
+                    $param->removeMyComponent($parametrage);
+                    $parametrage->removeMeElementOfLiasse($param);
+                    $pdf = $this->composerLiasse($param);
+                    $pdf->setCurrent(1);
+                    $param->addPdfSource($pdf);
+                    $pdf->setParametrage($param);
+                }
+
                 $id = $parametrage->getId();
                 $em->remove($parametrage);
                 $em->flush();
@@ -301,7 +347,7 @@ class ParametrageController extends Controller
             ini_set('max_execution_time', 0);
             // TODO: Change source pdf file path
             // TODO: Change pdf file names column in the CSV file
-            $pdfDir = $this->container->getParameter('kernel.root_dir').'/../../ressources/pdf';
+            $pdfDir = $this->container->getParameter('resources_dir');
             $file = $form->get('submitFile')->getData();
             $data = $this->csvToArray($file);
             $em = $this->getDoctrine()->getManager();
@@ -400,7 +446,7 @@ class ParametrageController extends Controller
 
     private function getPdfInfos(Parametrage $parametrage) {
         $e = array(
-            'pdf_id' => $parametrage->getLastPdfSource()->getId(),
+            'pdf_id' => $parametrage->getId(),
             'pdf' => $parametrage->getLastPdfSource()->getTitle()
         );
         return $e;

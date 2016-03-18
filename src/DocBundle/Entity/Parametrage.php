@@ -117,11 +117,39 @@ class Parametrage
     private $liasse;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="order_in_liasse", type="integer", nullable=true)
+     */
+    private $orderInLiasse;
+
+    /**
+     * @var ArrayCollection
+     * Liasses in thom Im included (Im not liasse)
+     *
+     * @ORM\ManyToMany(targetEntity="Parametrage", mappedBy="myComponents")
+     */
+    private $meElementOfLiasses;
+
+    /**
+     * @var ArrayCollection
+     * Elements composing my liasse (Im a liasse)
+     *
+     * @ORM\ManyToMany(targetEntity="Parametrage", inversedBy="meElementOfLiasses")
+     * @ORM\JoinTable(name="liasse_components",
+     *      joinColumns={@ORM\JoinColumn(name="parametrage_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="liasse_component_id", referencedColumnName="id")}
+     *      )
+     */
+    private $myComponents;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->pdfSources = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->pdfSources = new ArrayCollection();
+        $this->liasseComponents = new ArrayCollection();
     }
 
     /**
@@ -462,5 +490,107 @@ class Parametrage
         $this->liasse = $liasse;
     }
 
+    /**
+     * Set orderInLiasse
+     *
+     * @param integer $orderInLiasse
+     *
+     * @return Parametrage
+     */
+    public function setOrderInLiasse($orderInLiasse)
+    {
+        $this->orderInLiasse = $orderInLiasse;
 
+        return $this;
+    }
+
+    /**
+     * Get orderInLiasse
+     *
+     * @return integer
+     */
+    public function getOrderInLiasse()
+    {
+        return $this->orderInLiasse;
+    }
+
+    /**
+     * Add meElementOfLiass
+     *
+     * @param \DocBundle\Entity\Parametrage $meElementOfLiass
+     *
+     * @return Parametrage
+     */
+    public function addMeElementOfLiasse(\DocBundle\Entity\Parametrage $meElementOfLiass)
+    {
+        $this->meElementOfLiasses[] = $meElementOfLiass;
+
+        return $this;
+    }
+
+    /**
+     * Remove meElementOfLiass
+     *
+     * @param \DocBundle\Entity\Parametrage $meElementOfLiass
+     */
+    public function removeMeElementOfLiasse(\DocBundle\Entity\Parametrage $meElementOfLiass)
+    {
+        $this->meElementOfLiasses->removeElement($meElementOfLiass);
+    }
+
+    /**
+     * Get meElementOfLiasses
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMeElementOfLiasses()
+    {
+        return $this->meElementOfLiasses;
+    }
+
+    /**
+     * Add myComponent
+     *
+     * @param \DocBundle\Entity\Parametrage $myComponent
+     *
+     * @return Parametrage
+     */
+    public function addMyComponent(\DocBundle\Entity\Parametrage $myComponent)
+    {
+        $this->myComponents[] = $myComponent;
+
+        return $this;
+    }
+
+    /**
+     * Remove myComponent
+     *
+     * @param \DocBundle\Entity\Parametrage $myComponent
+     */
+    public function removeMyComponent(\DocBundle\Entity\Parametrage $myComponent)
+    {
+        $this->myComponents->removeElement($myComponent);
+    }
+
+    /**
+     * Get myComponents
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMyComponents()
+    {
+        return $this->myComponents;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function compose() {
+        /*$ls = $this->getMeElementOfLiasses();
+        foreach ($ls as $param) {
+            $pdf = $this->composerLiasse($param);
+            $param->addPdfSource($pdf);
+            $pdf->setParametrage($param);
+        }*/
+    }
 }

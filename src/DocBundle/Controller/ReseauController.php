@@ -170,7 +170,7 @@ class ReseauController extends Controller
     }
 
     /**
-     * Finds and displays a Reseau parametrage list.
+     * Finds and displays a Reseau parametrages list.
      *
      */
     public function showParametrageAction(Reseau $reseau, $page)
@@ -221,7 +221,7 @@ class ReseauController extends Controller
         if($form->isSubmitted() && $form->isValid()) {
             ini_set('max_execution_time', 0);
             $version->setUser($this->getUser()->getUsername());
-            $reseauParamsDir = $this->container->getParameter('kernel.root_dir').'/../../generations/'.$reseau->getCode();
+            $reseauParamsDir = $this->container->getParameter('generation_dir').'/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
 
             $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
@@ -229,11 +229,10 @@ class ReseauController extends Controller
             $range = 20;
             $fs = new Filesystem();
             if ($fs->exists($reseauParamsDir)) {
-                //$fs->remove($reseauParamsDir);
+                $fs->remove($reseauParamsDir);
             }
             while ($block < count($parametrages)) {
                 $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $block, $range);
-
                 foreach ($parametrages as $param) {
                     try {
                         $contratDir = $reseauParamsDir .'/'. $param->getContrat();

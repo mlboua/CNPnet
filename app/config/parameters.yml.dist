@@ -17,3 +17,10 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+
+    #my values
+    generation_dir: D:\wamp\www\generations
+    tmp_compo_dir: D:\wamp\www\generations\tmp
+    python_exe_dir: C:\Program Files (x86)\Python35-32\python.exe
+    resources_dir: D:\wamp\www\ressources\pdf
