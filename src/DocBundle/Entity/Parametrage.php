@@ -220,6 +220,7 @@ class Parametrage
     public function generateFileName($extension)
     {
         $fileName = $this->getContrat().'_'.$this->getType().'_'.$this->getReference().''.$extension;
+        $fileName = str_replace(' ', '_', $fileName);
         return $fileName;
     }
 
