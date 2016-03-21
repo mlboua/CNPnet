@@ -11,10 +11,10 @@
                 {% if  parametrages is not empty %}
                     <div class = "panel-heading">
                         <h3 class = "panel-title">
-                            <i class="glyphicon glyphicon-th-list"></i> La liste des paramètrages de {{ reseau.name }}
+                            <i class="glyphicon glyphicon-th-list"></i> La liste des paramétrages de {{ reseau.name }}
                             <span class="label label-danger" id="version"> V{{ version.numero }} {{ version.enCours ? 'En cours...' : '' }}</span>
                             <a href="{{ path('parametrage_new') }}">
-                                <button type="button" class="btn btn-primary pull-right">Ajouter un paramètrage</button>
+                                <button type="button" class="btn btn-primary pull-right">Ajouter un paramétrage</button>
                             </a>
                         </h3>
                     </div>
@@ -121,7 +121,7 @@
                 {% else %}
                     <div class = "panel-heading">
                         <h3 class = "panel-title">
-                            <i class="glyphicon glyphicon-th-list"></i> Aucun paramétrage n'a été renseign {{ reseau.name }}
+                            <i class="glyphicon glyphicon-th-list"></i> Aucun paramétrage n'a été renseigné {{ reseau.name }}
                         </h3>
                     </div>
                     <div class = "panel-body">
