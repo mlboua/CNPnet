@@ -33,9 +33,9 @@ class ParametrageController extends Controller
         $maxPerPage=30;
         $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrages($page, $maxPerPage);
         $maxPerPage = ceil(count($parametrages)/$maxPerPage);
-        /*if ($page > $maxPerPage) {
+        if ($page > $maxPerPage) {
             throw $this->createNotFoundException("La page ".$page." n'existe pas.");
-        }*/
+        }
         return $this->render('DocBundle:parametrage:index.html.twig', array(
             'parametrages' => $parametrages,
             'maxPerPage' => $maxPerPage,
