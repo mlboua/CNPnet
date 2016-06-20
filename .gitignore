@@ -11,9 +11,13 @@
 !/var/sessions
 /var/sessions/*
 !var/sessions/.gitkeep
-!var/SymfonyRequirements.php
+var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
 README.md
 LICENSE
+.settings/
 .idea/*
+/web/js/
+/web/css/
+/web/images/
