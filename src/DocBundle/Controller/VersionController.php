@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 class VersionController extends Controller {
 	/**
 	 * Generate a reaseau params.
-	 * 
+	 *
 	 * @param Request $request        	
 	 * @param Reseau $reseau        	
 	 * @param Version $version        	
@@ -53,9 +53,9 @@ class VersionController extends Controller {
 	
 	/**
 	 * Find and displays the version of a specific reseau.
-	 * 
-	 * @param Request $request
-	 * @param Reseau $reseau
+	 *
+	 * @param Request $request        	
+	 * @param Reseau $reseau        	
 	 */
 	public function paramsHistoryAction(Request $request, Reseau $reseau) {
 		$em = $this->getDoctrine ()->getManager ();
@@ -68,7 +68,7 @@ class VersionController extends Controller {
 	
 	/**
 	 * Finds and displays a parametrage list of a specific version.
-	 * 
+	 *
 	 * @param Version $version        	
 	 * @return Response
 	 */
@@ -101,8 +101,8 @@ class VersionController extends Controller {
 	
 	/**
 	 * Finds and displays a Archive associated pdf document.
-	 * 
-	 * @param ArchiveParam $parametrage
+	 *
+	 * @param ArchiveParam $parametrage        	
 	 */
 	public function showArchivePdfAction(ArchiveParam $parametrage) {
 		$pdfFile = $parametrage->getLastPdfSource ()->getFile ();
@@ -114,7 +114,7 @@ class VersionController extends Controller {
 	
 	/**
 	 * Create an download csv file from table content.
-	 * 
+	 *
 	 * @param Request $request        	
 	 * @param Version $version        	
 	 * @return Response
@@ -156,12 +156,12 @@ class VersionController extends Controller {
 				'Content-Disposition' => 'attachment; filename="export.csv"' 
 		) );
 	}
-
+	
 	/**
-	 * 
-	 * @param Version $version
-	 * @param unknown $actionPath
-	 * @param unknown $method
+	 *
+	 * @param Version $version        	
+	 * @param unknown $actionPath        	
+	 * @param unknown $method        	
 	 */
 	private function createVersionForm(Version $version, $actionPath, $method) {
 		return $this->createFormBuilder ()->setAction ( $this->generateUrl ( $actionPath, array (

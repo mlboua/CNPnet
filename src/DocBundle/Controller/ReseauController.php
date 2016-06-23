@@ -226,7 +226,7 @@ class ReseauController extends Controller
      */
     public function generateParamsAction(Request $request, Reseau $reseau, Version $version) {
     	
-    	$paramService = $this->get("param_service");
+    	$paramService = $this->get ( "param_service" );
     	
         $version = $reseau->getVersions()->last();
         $form = $this->createForm('DocBundle\Form\VersionType', $version);
@@ -307,7 +307,6 @@ class ReseauController extends Controller
      * Creates a form to delete a Reseau entity.
      *
      * @param Reseau $reseau The Reseau entity
-     *
      * @return \Symfony\Component\Form\Form The form
      */
     private function createReseauForm(Reseau $reseau, $actionPath, $method)
@@ -324,7 +323,6 @@ class ReseauController extends Controller
      * Creates a form to delete a Parametrage entity.
      *
      * @param Reseau $parametrage The Parametrage entity
-     *
      * @return \Symfony\Component\Form\Form The form
      */
     private function createDeleteForm(Reseau $reseau)
