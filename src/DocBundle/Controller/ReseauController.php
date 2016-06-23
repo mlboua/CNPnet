@@ -2,22 +2,19 @@
 
 namespace DocBundle\Controller;
 
-use DateTime;
-use DocBundle\Entity\ArchiveParam;
-use DocBundle\Entity\ArchivePdf;
 use DocBundle\Entity\Parametrage;
+use DocBundle\Entity\Reseau;
 use DocBundle\Entity\Version;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use DocBundle\Entity\Reseau;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Reseau controller.
+ * 
+ * @author scouliba
  *
+ * Reseau controller.
  */
 class ReseauController extends Controller
 {
@@ -37,8 +34,10 @@ class ReseauController extends Controller
     }
 
     /**
+     * 
+     * @param Request $request
+     * 
      * Creates a new Reseau entity.
-     *
      */
     public function newAction(Request $request)
     {
@@ -65,8 +64,11 @@ class ReseauController extends Controller
     }
 
     /**
+     * 
+     * @param Reseau $reseau
+     * @return \Symfony\Component\HttpFoundation\Response
+     * 
      * Finds and displays a Reseau entity.
-     *
      */
     public function showAction(Reseau $reseau)
     {
@@ -79,8 +81,11 @@ class ReseauController extends Controller
     }
 
     /**
+     * 
+     * @param Request $request
+     * @param Reseau $reseau
+     * 
      * Displays a form to edit an existing Reseau entity.
-     *
      */
     public function editAction(Request $request, Reseau $reseau)
     {
@@ -109,10 +114,11 @@ class ReseauController extends Controller
     }
 
     /**
-     * Deletes a Reseau entity.
-     *
+     * 
+     * @param Request $request
+     * @param Reseau $reseau
+     * 
      * TODO: change todo request type to post
-     *
      */
     public function deleteAction(Request $request, Reseau $reseau)
     {
@@ -170,8 +176,12 @@ class ReseauController extends Controller
     }
 
     /**
+     * 
+     * @param Reseau $reseau
+     * @param unknown $page
+     * @return \Symfony\Component\HttpFoundation\Response
+     * 
      * Finds and displays a Reseau parametrages list.
-     *
      */
     public function showParametrageAction(Reseau $reseau, $page)
     {
@@ -208,67 +218,29 @@ class ReseauController extends Controller
     }
 
     /**
-     * Generate a reaseau params.
-     * TODO: Check that files are successfully created
-     *
+     * 
+     * @param Request $request
+     * @param Reseau $reseau
+     * @param Version $version
+     * @return RedirectResponse | JsonResponse
      */
-    public function generateParamsAction(Request $request, Reseau $reseau, Version $version)
-    {
+    public function generateParamsAction(Request $request, Reseau $reseau, Version $version) {
+    	
+    	$paramService = $this->get("param_service");
+    	
         $version = $reseau->getVersions()->last();
         $form = $this->createForm('DocBundle\Form\VersionType', $version);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
-            ini_set('max_execution_time', 0);
             $version->setUser($this->getUser()->getUsername());
             $reseauParamsDir = $this->container->getParameter('generation_dir').'/'.$reseau->getCode();
             $em = $this->getDoctrine()->getManager();
 
             $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId());
-            $block = 1;
-            $range = 20;
-            $fs = new Filesystem();
-            if ($fs->exists($reseauParamsDir)) {
-                $fs->remove($reseauParamsDir);
-            }
-            while ($block < count($parametrages)) {
-                $parametrages = $em->getRepository('DocBundle:Parametrage')->getParametrageByReseau($reseau->getId(), $block, $range);
-                foreach ($parametrages as $param) {
-                    try {
-                        $contratDir = $reseauParamsDir .'/'. $param->getContrat();
-                        $fs->mkdir($contratDir);
-                        file_put_contents(
-                            $contratDir .'/'. $param->getLastPdfSource()->getTitle(),
-                            $param->getLastPdfSource()->getFile()
-                        );
-                        $this->generateCollectiviteFile($param, $version->getNumero(),
-                            $version->getMessage(),
-                            $contratDir .'/'. str_replace('.pdf', '.collectivites', $param->getLastPdfSource()->getTitle())
-                        );
-                    } catch (IOException $e) {
-                        echo 'Une erreur est survenue lors de la création du repertoire '.$e->getPath();
-                    }
-
-                    $archive = new ArchiveParam();
-                    $pdf = $param->getLastPdfSource();
-                    $pdf->setCurrent(0);
-                    $archive->addPdfSource($pdf);
-                    $archive->setParametrage($param);
-                    $archive->setAction("Génération");
-
-                    $version->addArchive($archive);
-                    $archive->addVersion($version);
-
-                    $version->setEncours('0');
-                    $reseau->addVersion($version);
-                    $em->persist($reseau);
-                    $em->flush();
-                    $archive = null;
-                }
-
-                $block = $block + 1;
-            }
-            ini_set('max_execution_time', 60);
+            
+            $paramService->generateParams($reseau, $version, $parametrages, $reseauParamsDir);
+            
             return $this->redirectToRoute('reseau_show_parametrage',
                 array(
                     'id' => $reseau->getId(),
@@ -283,9 +255,12 @@ class ReseauController extends Controller
     }
 
     /**
-     * Generate a reaseau params.
+     * 
+     * @param Request $request
+     * @param Reseau $reseau
+     * @return \Symfony\Component\HttpFoundation\Response
+     * 
      * TODO: Check that files are successfully created
-     *
      */
     public function exportParamsAction(Request $request, Reseau $reseau)
     {
@@ -326,28 +301,6 @@ class ReseauController extends Controller
             'Content-Type' => 'application/force-download',
             'Content-Disposition' => 'attachment; filename="export.csv"'
         ));
-    }
-
-    /**
-     * @param Parametrage $parametrage
-     * @param $path
-     */
-    protected function generateCollectiviteFile(Parametrage $parametrage, $version, $commentaire, $path)
-    {
-        $now = new DateTime();
-        $now->format('d/m/Y H:i:s');
-        $content = "#CREE AUTOMATIQUEMENT LE ".$now->format('d/m/Y H:i:s');
-        $content .= "\n#Utilisateur : ".$this->getUser()->getUsername()."( ".$this->getUser()->getEmail().")";
-        $content .= "\n# Version V".$version;
-        $content .= "\n# $commentaire";
-        $content .= "\n#----------------------------- ";
-        $content .= "\nLIBELLE=". $parametrage->getLibelle();
-        $content .= "\nORDRE=". $parametrage->getOrdre();
-        $content .= "\nPARTENAIRE=";
-        $content .= in_array($parametrage->getPartenaires(), array('*', 'tous', 'Tous')) ? '*' : $parametrage->getPartenaires();
-        $content .= "\nCOLLECTIVITES=";
-        $content .= in_array($parametrage->getCollectivites(), array('*', 'toutes', 'Toutes')) ? '*' : $parametrage->getCollectivites();
-        file_put_contents($path,$content);
     }
 
     /**

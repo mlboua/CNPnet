@@ -2,19 +2,17 @@
 
 namespace DocBundle\Controller;
 
-use DocBundle\Entity\ArchivePdf;
+use DocBundle\Entity\Parametrage;
 use DocBundle\Entity\Pdf;
 use DocBundle\Entity\Version;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use DocBundle\Entity\Parametrage;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Parametrage controller.
@@ -45,7 +43,8 @@ class ParametrageController extends Controller
 
     /**
      * Creates a new Parametrage entity.
-     *
+     * 
+     * @param Request $request
      */
     public function newAction(Request $request)
     {
@@ -150,7 +149,7 @@ class ParametrageController extends Controller
                 $comp->getLastPdfSource()->getFile()
             );
         }
-        //TODO: Revoir l'exécution du script python (parameters.yml)
+        //TODO: Revoir l'execution du script python (parameters.yml)
         $cmd = 'python "'.$pythonDir.'" "'.$mergingDir.'" "'.$mergingDir.'/'.$parametrage->generateFileName('.pdf').'"';
         $process = new Process($cmd);
         try {
